@@ -103,8 +103,7 @@
     <button data-url="https://embedcanais.com/fx/">FX</button>
     <button data-url="https://embedcanais.com/amc/">AMC</button>
     <button data-url="https://embedcanais.com/studiouniversal/">Studio Universal</button>
-    <button data-url="https://embedcanais.com/aee">A&E</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fvideo08.logicahost.com.br%2Fportaldatropical02%2Fportaldatropical02%2Fchunklist_w1012207201.m3u8">Viva</button>
+    <button data-url="https://embedcanais.com/aee">A&E</button>    
     <button data-url="https://embedcanais.com/tlc/">TLC</button>
 
     <!-- Infantil -->
@@ -176,6 +175,8 @@
       player.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
       player.setAttribute('allowfullscreen', '');
       // O sandbox pode impedir o autoplay em alguns casos, vamos ser mais permissivos.
+      // Adiciona o atributo 'muted' diretamente ao iframe para garantir que o navegador o reconheça.
+      player.setAttribute('muted', 'true');
       player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation');
       
       return player;
@@ -305,10 +306,26 @@
             changeChannel(url, targetButton); // Chamada direta da função
             targetButton?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
           }
-        }, 1200); // Espera 1.2 segundos antes de mudar
+        }, 500); // Espera 0.5 segundos antes de mudar (ajustado para melhor responsividade)
       } else if (event.key === 'Enter') {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
+      } else if (event.key === 'Tab') {
+        event.preventDefault(); // Impede o comportamento padrão do Tab (mudar foco)
+        // Permite que o usuário entre em tela cheia manualmente
+        requestFullscreenFromUserAction();
+      } else if (event.key === ' ' || event.code === 'Space') {
+        event.preventDefault(); // Impede o comportamento padrão do espaço (rolar a página)
+        
+        const player = document.getElementById('player');
+        if (player) {
+          // Tenta focar no iframe. Isso pode ser suficiente para que o player interno
+          // capture eventos de teclado ou inicie a reprodução.
+          player.focus();
+        } else {
+          // Se não houver player, recarrega o canal ativo como fallback.
+          activeButton?.click();
+        }
       } else {
         return; // Ignora outras teclas
       }
