@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Channel</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* Esconde barras de rolagem */
+      background-color: #000; /* Fundo preto para imersão */
+    }
+    #playerContainer {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    #controls {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      z-index: 10; /* Garante que os controles fiquem sobre o vídeo */
+      background-color: rgba(34, 34, 34, 0.8); /* Fundo semi-transparente */
+      padding: 10px;
+      text-align: center;
+      overflow-x: auto; /* Permite rolagem horizontal */
+      white-space: nowrap; /* Impede que os botões quebrem linha */
+      transition: opacity 0.5s ease, transform 0.5s ease; /* Animação suave */
+    }
+    #controls.hidden {
+      opacity: 0;
+      transform: translateY(100%); /* Desliza para baixo e para fora da tela */
+      pointer-events: none; /* Impede interação quando escondido */
+    }
+    #controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 0 5px; /* Botões voltam a ter margem horizontal */
+      cursor: pointer;
+      border: 1px solid #555;
+      background-color: #333;
+      color: white;
+      display: inline-block; /* Botões voltam a se alinhar horizontalmente */
+      /* width: 100%; e margin-bottom: 5px; removidos */
+    }
+    #controls button.active {
+      background-color: #007bff; /* Cor para o botão ativo */
+      border-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <!-- TV Aberta -->
+    <button class="active" data-url="https://embedcanais.com/globosp/">Globo</button>
+    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fvideo08.logicahost.com.br%2Fportaldatropical02%2Fportaldatropical02%2Fchunklist_w1012207201.m3u8">Record</button>
+    <button data-url="https://embedcanais.com/sbtsp/">SBT</button>
+    <button data-url="https://embedcanais.com/bandsp/">Band</button>
+    <button data-url="https://embedcanais.com/redetv/">RedeTV!</button>
+    <button data-url="https://embedcanais.com/tvcultura/">TV Cultura</button>
+    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Ftvbrasil-stream.ebc.com.br%2Findex.m3u8">TV Brasil</button>
+    <button data-url="https://embedcanais.com/redevida/">Rede Vida</button>
+    <button data-url="https://embedcanais.com/cancaonova">Canção Nova</button>
+    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fcdn.live.br1.jmvstream.com%2Fw%2FLVW-9716%2FLVW9716_HbtQtezcaw%2Fchunklist.m3u8">TV Aparecida</button>
+    <button data-url="https://embedcanais.com/multishow/">Multishow</button>
+    <button data-url="https://embedcanais.com/gnt/">GNT</button>
+    <button data-url="https://embedcanais.com/globoplaynovelas">Globoplay Novelas</button>
+    <button data-url="https://embedcanais.com/mtv/">MTV</button>
+
+    <!-- Filmes e Séries -->
+    <button data-url="https://embedcanais.com/tcpremium">Telecine Premium</button>
+    <button data-url="https://embedcanais.com/tcaction">Telecine Action</button>
+    <button data-url="https://embedcanais.com/tcpipoca">Telecine Pipoca</button>
+    <button data-url="https://embedcanais.com/tcfun">Telecine Fun</button>
+    <button data-url="https://embedcanais.com/tctouch">Telecine Touch</button>
+    <button data-url="https://embedcanais.com/tccult">Telecine Cult</button>
+    <button data-url="https://embedcanais.com/hbo/">HBO</button>
+    <button data-url="https://embedcanais.com/hbo2/">HBO2</button>
+    <button data-url="https://embedcanais.com/hbofamily/">HBO Family</button>
+    <button data-url="https://embedcanais.com/hboplus/">HBO Plus</button>
+    <button data-url="https://embedcanais.com/hbosignature/">HBO Signature</button>
+    <button data-url="https://embedcanais.com/hbopop/">HBO Pop</button>
+    <button data-url="https://embedcanais.com/hboxtreme/">HBO Xtreme</button>
+    <button data-url="https://embedcanais.com/megapix/">Megapix</button>
+    <button data-url="https://embedcanais.com/cinemax/">Cinemax</button>
+    <button data-url="https://embedcanais.com/warner/">Warner Channel</button>
+    <button data-url="https://embedcanais.com/sonychannel">Sony Channel</button>
+    <button data-url="https://embedcanais.com/universaltv/">Universal TV</button>
+    <button data-url="https://embedcanais.com/axn/">AXN</button>
+    <button data-url="https://embedcanais.com/tnt/">TNT</button>
+    <button data-url="https://embedcanais.com/tntseries/">TNT Séries</button>
+    <button data-url="https://embedcanais.com/space/">Space</button>
+    <button data-url="https://embedcanais.com/paramountnetwork/">Paramount Network</button>
+    <button data-url="https://embedcanais.com/fx/">FX</button>
+    <button data-url="https://embedcanais.com/amc/">AMC</button>
+    <button data-url="https://embedcanais.com/studiouniversal/">Studio Universal</button>
+    <button data-url="https://embedcanais.com/aee">A&E</button>
+    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fvideo08.logicahost.com.br%2Fportaldatropical02%2Fportaldatropical02%2Fchunklist_w1012207201.m3u8">Viva</button>
+    <button data-url="https://embedcanais.com/tlc/">TLC</button>
+
+    <!-- Infantil -->
+    <button data-url="https://embedcanais.com/cartoonnetwork/">Cartoon Network</button>
+    <button data-url="https://embedcanais.com/disneychannel/">Disney Channel</button>
+    <button data-url="https://embedcanais.com/boomerang/">Boomerang</button>
+    <button data-url="https://embedcanais.com/nickelodeon/">Nickelodeon</button>
+    <button data-url="https://embedcanais.com/nickjr/">Nick Jr.</button>
+    <button data-url="https://embedcanais.com/discoverykids/">Discovery Kids</button>
+    <button data-url="https://embedcanais.com/disneyjunior/">Disney Junior</button>
+    <button data-url="https://embedcanais.com/gloob/">Gloob</button>
+    <button data-url="https://embedcanais.com/gloobinho/">Gloobinho</button>
+    <button data-url="https://embedcanais.com/tooncast/">Tooncast</button>
+
+    <!-- Esportes -->
+    <button data-url="https://embedcanais.com/sportv/">SporTV</button>
+    <button data-url="https://embedcanais.com/sportv2/">SporTV 2</button>
+    <button data-url="https://embedcanais.com/sportv3/">SporTV 3</button>
+    <button data-url="https://embedcanais.com/espn/">ESPN</button>
+    <button data-url="https://embedcanais.com/espn2/">ESPN 2</button>
+    <button data-url="https://embedcanais.com/espn3/">ESPN 3</button>
+    <button data-url="https://embedcanais.com/espn4/">ESPN 4</button>
+    <button data-url="https://embedcanais.com/espn5/">ESPN 5 (Fox Sports)</button>
+    <button data-url="https://embedcanais.com/bandsports/">BandSports</button>
+    <button data-url="https://embedcanais.com/premiereclubes">Premiere</button>
+    <button data-url="https://embedcanais.com/premiere2/">Premiere 2</button>
+    <button data-url="https://embedcanais.com/premiere3/">Premiere 3</button>
+    <button data-url="https://embedcanais.com/premiere4/">Premiere 4</button>
+    <button data-url="https://embedcanais.com/premiere5/">Premiere 5</button>
+    <button data-url="https://embedcanais.com/premiere6/">Premiere 6</button>
+    <button data-url="https://embedcanais.com/premiere7/">Premiere 7</button>
+    <button data-url="https://embedcanais.com/premiere8/">Premiere 8</button>
+    <button data-url="https://embedcanais.com/premiere9/">Premiere 9</button>
+    <button data-url="https://embedcanais.com/combate/">Combate</button>
+    <button data-url="https://embedcanais.com/nbatv/">NBA TV</button>
+    <button data-url="https://embedcanais.com/tntsports/">TNT Sports</button>
+    <button data-url="https://embedcanais.com/off/">Off</button>
+
+    <!-- Documentários e Notícias -->
+    <button data-url="https://embedcanais.com/globonews/">GloboNews</button>
+    <button data-url="https://embedcanais.com/cnnbrasil/">CNN Brasil</button>
+    <button data-url="https://embedcanais.com/recordnews/">Record News</button>
+    <button data-url="https://embedcanais.com/bandnews/">BandNews TV</button>
+    <button data-url="https://embedcanais.com/discoverychannel/">Discovery Channel</button>
+    <button data-url="https://embedcanais.com/nationalgeographic/">National Geographic</button>
+    <button data-url="https://embedcanais.com/historychannel/">History Channel</button>
+    <button data-url="https://embedcanais.com/animalplanet/">Animal Planet</button>
+    <button data-url="https://embedcanais.com/discoveryscience/">Discovery Science</button>
+    <button data-url="https://embedcanais.com/discoveryhh">Discovery Home & Health</button>
+    <button data-url="https://embedcanais.com/id/">ID (Investigation Discovery)</button>
+    <button data-url="https://embedcanais.com/curta/">Curta!</button>
+  </div>
+
+  <div id="playerContainer">
+    <!-- O player será inserido aqui pelo JavaScript -->
+  </div>
+
+  <script>
+    function createPlayer(url) {
+      const player = document.createElement('iframe');
+      player.id = 'player';
+      // Adiciona parâmetros de autoplay. Alguns players usam 'autoplay=1', outros 'autostart=true'.
+      const autoPlayUrl = new URL(url);
+      autoPlayUrl.searchParams.set('autoplay', '1');
+      autoPlayUrl.searchParams.set('autostart', 'true');
+      autoPlayUrl.searchParams.set('muted', '1'); // CORREÇÃO: 1 = sem som, necessário para autoplay.
+      player.src = autoPlayUrl.toString();
+      
+      player.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+      player.setAttribute('allowfullscreen', '');
+      // O sandbox pode impedir o autoplay em alguns casos, vamos ser mais permissivos.
+      player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation');
+      
+      return player;
+    }
+
+    function changeChannel(url, clickedButton) {
+      const playerContainer = document.getElementById('playerContainer');
+      const oldPlayer = document.getElementById('player');
+
+      if (oldPlayer) {
+        playerContainer.removeChild(oldPlayer);
+      }
+
+      if (!url) return; // Não faz nada se a URL for inválida
+
+      const newPlayer = createPlayer(url);
+      playerContainer.appendChild(newPlayer);
+
+      document.querySelectorAll('#controls button').forEach(button => {
+        button.classList.remove('active');
+      });
+
+      clickedButton.classList.add('active');
+      clickedButton.focus(); // Devolve o foco para o botão ativo, garantindo a continuidade da navegação.
+    }
+
+    function requestFullscreenFromUserAction() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            // A solicitação de tela cheia deve ser iniciada por um gesto do usuário (clique/tecla)
+            elem.requestFullscreen().catch(err => {
+                // Este erro é comum se a solicitação não for de uma ação direta, como no timeout dos números.
+                console.warn(`Aviso de tela cheia: ${err.message}`);
+            });
+        }
+    }
+
+    // Carrega o canal inicial quando a página é aberta
+    document.addEventListener('DOMContentLoaded', () => {
+      // Adiciona o número na frente de cada nome de canal
+      const channelButtons = document.querySelectorAll('#controls button');
+      channelButtons.forEach((button, index) => { // Adiciona o número e o evento de clique
+        const channelNumber = index + 1;
+        button.textContent = `${channelNumber}. ${button.textContent}`;
+        button.addEventListener('click', () => {
+          const url = button.dataset.url;
+          changeChannel(url, button);
+        });
+      });
+
+      const initialButton = document.querySelector('#controls button.active');
+      if (initialButton) {
+        // Pega a URL do atributo data-url
+        const url = initialButton.dataset.url;
+        // Carrega o canal inicial sem tentar ir para tela cheia automaticamente
+        changeChannel(url, initialButton); 
+      }
+    });
+
+    // Lógica para mostrar/esconder a barra de canais
+    let controlsTimeout = null;
+    const controls = document.getElementById('controls');
+
+    function showControls() {
+      controls.classList.remove('hidden');
+    }
+
+    function hideControls() {
+      controls.classList.add('hidden');
+    }
+
+    function resetControlsTimeout() {
+      clearTimeout(controlsTimeout);
+      showControls();
+      // Esconde os controles após 3 segundos de inatividade
+      controlsTimeout = setTimeout(hideControls, 3000);
+    }
+
+    let channelInputBuffer = '';
+    let channelInputTimeout = null;
+
+    // Adiciona a funcionalidade de mudar de canal com as setas do teclado
+    window.addEventListener('keydown', (event) => {
+      const buttons = Array.from(document.querySelectorAll('#controls button'));
+      const activeButton = document.querySelector('#controls button.active');
+      const currentIndex = buttons.indexOf(activeButton);
+      const isNumericKey = event.key >= '0' && event.key <= '9';
+      let nextIndex;
+
+      // Mostra os controles para dar feedback visual e esconde após 3s
+      resetControlsTimeout();
+
+      if (event.key === 'ArrowRight') {
+        nextIndex = currentIndex + 1;
+
+        if (nextIndex >= buttons.length) {
+          nextIndex = 0; // Volta para o primeiro canal
+        }
+        buttons[nextIndex]?.click(); // Apenas troca o canal, sem mostrar a guia
+        // A chamada de fullscreen já está no evento de 'click' do botão
+        buttons[nextIndex]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      } else if (event.key === 'ArrowLeft') {
+        nextIndex = currentIndex - 1;
+        if (nextIndex < 0) {
+          nextIndex = buttons.length - 1; // Vai para o último canal
+        }
+        buttons[nextIndex]?.click();
+        // A chamada de fullscreen já está no evento de 'click' do botão
+        // A barra não aparece, apenas troca o canal
+        buttons[nextIndex]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      } else if (isNumericKey) {
+        // Limpa o timeout anterior se o usuário digitar outro número rapidamente
+        clearTimeout(channelInputTimeout);
+
+        // Adiciona o número digitado ao buffer
+        channelInputBuffer += event.key;
+
+        // Define um timeout para mudar de canal após o usuário parar de digitar
+        channelInputTimeout = setTimeout(() => {
+          const channelNumber = parseInt(channelInputBuffer, 10);
+          channelInputBuffer = ''; // Limpa o buffer
+
+          // O índice do array é baseado em 0, então subtraímos 1 do número do canal
+          if (channelNumber > 0 && channelNumber <= buttons.length) {
+            const targetButton = buttons[channelNumber - 1];
+            const url = targetButton.dataset.url;
+            changeChannel(url, targetButton); // Chamada direta da função
+            targetButton?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        }, 1200); // Espera 1.2 segundos antes de mudar
+      } else if (event.key === 'Enter') {
+        // Permite que o usuário entre em tela cheia manualmente
+        requestFullscreenFromUserAction();
+      } else {
+        return; // Ignora outras teclas
+      }
+    });
+
+    // Inicia o comportamento de mostrar/esconder ao carregar a página
+    controls.classList.add('hidden');
+  </script>
+</html>
