@@ -80,105 +80,129 @@
       color: #ff4d4d; /* Cor vermelha para o texto */
       border-color: #ff4d4d; /* Cor vermelha para a borda */
     }
+    #welcome-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 100; /* Fica em cima de tudo */
+    }
   </style>
+  <!-- Adiciona a biblioteca hls.js para suporte a HLS -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
+  <div id="welcome-overlay">Clique para iniciar e ativar o som</div>
+
   <div id="channel-input-display" class="hidden"></div>
   <div id="controls">
     <!-- TV Aberta -->
-    <button class="active" data-url="https://embedcanais.com/globosp/">Globo</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fvideo08.logicahost.com.br%2Fportaldatropical02%2Fportaldatropical02%2Fchunklist_w1012207201.m3u8">Record</button>
-    <button data-url="https://embedcanais.com/sbtsp/">SBT</button>
-    <button data-url="https://embedcanais.com/bandsp/">Band</button>
-    <button data-url="https://embedcanais.com/redetv/">RedeTV!</button>
-    <button data-url="https://embedcanais.com/tvcultura/">TV Cultura</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Ftvbrasil-stream.ebc.com.br%2Findex.m3u8">TV Brasil</button>
-    <button data-url="https://embedcanais.com/redevida/">Rede Vida</button>
-    <button data-url="https://embedcanais.com/cancaonova">Canção Nova</button>
+    <button class="active" data-url="http://granpirosh.top/live/841866657/c581b7318b/289881.m3u8">Globo</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/244071.m3u8">Record</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/244161.m3u8">SBT</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/255465.m3u8">Band</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/80170.m3u8">RedeTV!</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/364662.m3u8">TV Cultura</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/159.m3u8">Futura</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/364678.m3u8">TV Brasil</button>    
+    <button data-url="https://d12e4o88jd8gex.cloudfront.net/out/v1/cea3de0b76ac4e82ab8ee0fd3f17ce12/index_1.m3u8">Rede Vida</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/240806.m3u8">Canção Nova</button>
     <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fcdn.live.br1.jmvstream.com%2Fw%2FLVW-9716%2FLVW9716_HbtQtezcaw%2Fchunklist.m3u8">TV Aparecida</button>
     <button data-url="https://embedcanais.com/multishow/">Multishow</button>
-    <button data-url="https://embedcanais.com/gnt/">GNT</button>
-    <button data-url="https://embedcanais.com/globoplaynovelas">Globoplay Novelas</button>
-    <button data-url="https://embedcanais.com/mtv/">MTV</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/52925853b7bdb3373184029fcd6e0f78/gnt.m3u8">GNT</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/38380a62107139581f856d34fe695cb3/viva.m3u8">Globoplay Novelas</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/e73a43172b483cb803cb28825a6c9297/mtv.m3u8">MTV</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/146.m3u8">Canal Brasil</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/687.m3u8">Comedy Central</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ce7180b9e662324883125f23e5c790cf/tlc.m3u8">TLC</button>
 
     <!-- Filmes e Séries -->
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2F0ad4ed06e486d0c036ecdea58d0ebece%2Ftelecinepremium.m3u8">Telecine Premium</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2F67ea9afb427959826a770bb8d16cef89%2Ftelecineaction.m3u8">Telecine Action</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2Febe602454895327b0b7cb8fb8fbf2e1d%2Ftelecinepipoca.m3u8">Telecine Pipoca</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2Fa432e444cb0c175c45b9aaabe72b6727%2Ftelecinefun.m3u8">Telecine Fun</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2Fd9c08c4334efedc09cc7bebcb4fe7911%2Ftelecinetouch.m3u8">Telecine Touch</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/49d7cda69dc581434f05befe9eec83a2/telecinecult.m3u8">Telecine Cult</button>
-    <button data-url="https://embedcanais.com/hbo/">HBO</button>
-    <button data-url="https://embedcanais.com/hbo2/">HBO2</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2F64c07fa2c057b7a9dbbab20ba8f89bcb%2Fhbofamily.m3u8">HBO Family</button>
-    <button data-url="https://embedcanais.com/hboplus/">HBO Plus</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/635.m3u8">Telecine Premium</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/615.m3u8">Telecine Action</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ebe602454895327b0b7cb8fb8fbf2e1d/telecinepipoca.m3u8">Telecine Pipoca</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/a432e444cb0c175c45b9aaabe72b6727/telecinefun.m3u8">Telecine Fun</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/589.m3u8">Telecine Touch</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/620.m3u8">Telecine Cult</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/05613f75bd610dce50649e227ec4988c/hbo.m3u8">HBO</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/944e942bc2dba0e49d10e26302fdb072/hbo2.m3u8">HBO2</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/64c07fa2c057b7a9dbbab20ba8f89bcb/hbofamily.m3u8">HBO Family</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/e2223aa62f349d1db3e4c5b1d9e7a078/hboplus.m3u8">HBO Plus</button>
     <button data-url="https://embedcanais.com/hbosignature/">HBO Signature</button>
-    <button data-url="https://embedcanais.com/hbopop/">HBO Pop</button>
-    <button data-url="https://embedcanais.com/hboxtreme/">HBO Xtreme</button>
-    <button data-url="https://embedcanais.com/megapix/">Megapix</button>
-    <button data-url="https://embedcanais.com/cinemax/">Cinemax</button>
-    <button data-url="https://embedcanais.com/warner/">Warner Channel</button>
-    <button data-url="https://embedcanais.com/sonychannel">Sony Channel</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2F6acc5c01eb8fb1e98af30cad19d97af3%2Funiversaltv.m3u8">Universal TV</button>
-    <button data-url="https://embedcanais.com/axn/">AXN</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2Ffcc63cd6c510a65effe68820e75cb75f%2Ftnt.m3u8">TNT</button>
-    <button data-url="https://embedcanais.com/tntseries/">TNT Séries</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2F5b665493b20bb04c8945ec80ea6cfbaa%2Fspace.m3u8">Space</button>
-    <button data-url="https://embedcanais.com/paramountnetwork/">Paramount Network</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/2cee9cb36e5c7e7d9c3815fda70a3fb4/hbopop.m3u8">HBO Pop</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/74442b879b0ae5b6c3d00416ffef32be/hboxtreme.m3u8">HBO Xtreme</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/9276004d1f9e71e9b8dfa6b776987932/hbomundi.m3u8">HBO Mundi</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/692.m3u8">Megapix</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/682.m3u8">Cinemax</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/749.m3u8">Warner Channel</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/21229.m3u8">Sony Channel</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/743.m3u8">Universal TV</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/676.m3u8">AXN</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/fcc63cd6c510a65effe68820e75cb75f/tnt.m3u8">TNT</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/738.m3u8">TNT Séries</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/264555.m3u8">TNT Novelas</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/707.m3u8">Space</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/697.m3u8">Paramount Network</button>
     <button data-url="https://embedcanais.com/fx/">FX</button>
     <button data-url="https://embedcanais.com/amc/">AMC</button>
-    <button data-url="https://embedcanais.com/studiouniversal/">Studio Universal</button>
-    <button data-url="https://embedcanais.com/aee">A&E</button>    
-    <button data-url="https://embedcanais.com/tlc/">TLC</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/713.m3u8">Studio Universal</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/666.m3u8">A&E</button>
 
     <!-- Infantil -->
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2Ff17b2a4c62556c6d229d678471fcbde9%2Fcartoonnetwork.m3u8">Cartoon Network</button>
-    <button data-url="https://embedcanais.com/disneychannel/">Disney Channel</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/352.m3u8">Cartoon Network</button>
+    <button data-url="">Disney Channel</button>
     <button data-url="https://embedcanais.com/boomerang/">Boomerang</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2F6d20414fbdd60d20d90b18f12ba33f65%2Fnickelodeon.m3u8">Nickelodeon</button>
-    <button data-url="https://embedcanais.com/nickjr/">Nick Jr.</button>
-    <button data-url="https://embedcanais.com/discoverykids/">Discovery Kids</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/372.m3u8">Nickelodeon</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/368.m3u8">Nick Jr.</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/364.m3u8">Discovery Kids</button>
     <button data-url="https://embedcanais.com/disneyjunior/">Disney Junior</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fdm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online%2Ftoken%2F47be126edf3955dc6f72e7f7c5c147f6%2Fgloob.m3u8">Gloob</button>
-    <button data-url="https://embedcanais.com/gloobinho/">Gloobinho</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/377227.m3u8">Gloob</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/377232.m3u8">Gloobinho</button>
     <button data-url="https://embedcanais.com/tooncast/">Tooncast</button>
 
     <!-- Esportes -->
-    <button data-url="https://embedcanais.com/sportv/">SporTV</button>
-    <button data-url="https://embedcanais.com/sportv2/">SporTV 2</button>
-    <button data-url="https://embedcanais.com/sportv3/">SporTV 3</button>
-    <button data-url="https://embedcanais.com/espn/">ESPN</button>
-    <button data-url="https://embedcanais.com/espn2/">ESPN 2</button>
-    <button data-url="https://embedcanais.com/espn3/">ESPN 3</button>
-    <button data-url="https://embedcanais.com/espn4/">ESPN 4</button>
-    <button data-url="https://embedcanais.com/espn5/">ESPN 5 (Fox Sports)</button>
-    <button data-url="https://embedcanais.com/bandsports/">BandSports</button>
-    <button data-url="https://embedcanais.com/premiereclubes">Premiere</button>
-    <button data-url="https://embedcanais.com/premiere2/">Premiere 2</button>
-    <button data-url="https://embedcanais.com/premiere3/">Premiere 3</button>
-    <button data-url="https://embedcanais.com/premiere4/">Premiere 4</button>
-    <button data-url="https://embedcanais.com/premiere5/">Premiere 5</button>
-    <button data-url="https://embedcanais.com/premiere6/">Premiere 6</button>
-    <button data-url="https://embedcanais.com/premiere7/">Premiere 7</button>
-    <button data-url="https://embedcanais.com/premiere8/">Premiere 8</button>
-    <button data-url="https://embedcanais.com/premiere9/">Premiere 9</button>
-    <button data-url="https://embedcanais.com/combate/">Combate</button>
-    <button data-url="https://embedcanais.com/nbatv/">NBA TV</button>
-    <button data-url="https://embedcanais.com/tntsports/">TNT Sports</button>
-    <button data-url="https://embedcanais.com/off/">Off</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/118881.m3u8">SporTV</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/554.m3u8">SporTV 2</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/559.m3u8">SporTV 3</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/309458.m3u8">ESPN</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/215.m3u8">ESPN 2</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/220.m3u8">ESPN 3</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/225.m3u8">ESPN 4</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/da7d89ae11e4aa05410a083ff0dbcb9d/espn5.m3u8">ESPN 5 (Fox Sports)</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/235.m3u8">BandSports</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/494.m3u8">Premiere</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/499.m3u8">Premiere 2</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/504.m3u8">Premiere 3</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/509.m3u8">Premiere 4</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/514.m3u8">Premiere 5</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/519.m3u8">Premiere 6</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/519.m3u8">Premiere 7</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/380749.m3u8">Premiere 8</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/240.m3u8">Combate</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/55f18e9a453685fd88baa0a6af6a4eb7/off.m3u8">Off</button>
 
     <!-- Documentários e Notícias -->
-    <button data-url="https://embedcanais.com/globonews/">GloboNews</button>
-    <button data-url="https://embedcanais.com/cnnbrasil/">CNN Brasil</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/318c24d556d8144103ee6e6ba6e7fcf5/globonews.m3u8">GloboNews</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ee19eef956564517cf6439e86931e03d/cnnbrasil.m3u8">CNN Brasil</button>
     <button data-url="https://embedcanais.com/recordnews/">Record News</button>
-    <button data-url="https://embedcanais.com/bandnews/">BandNews TV</button>
-    <button data-url="https://embedcanais.com/discoverychannel/">Discovery Channel</button>
-    <button data-url="https://embedcanais.com/nationalgeographic/">National Geographic</button>
-    <button data-url="https://embedcanais.com/historychannel/">History Channel</button>
-    <button data-url="https://embedcanais.com/animalplanet/">Animal Planet</button>
-    <button data-url="https://embedcanais.com/discoveryscience/">Discovery Science</button>
-    <button data-url="https://embedcanais.com/discoveryhh">Discovery Home & Health</button>
-    <button data-url="https://embedcanais.com/id/">ID (Investigation Discovery)</button>
+    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/a105eb3e5cdb5317510ef8923cdf93ba/bandnews.m3u8">BandNews TV</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2577.m3u8">Discovery Channel</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2572.m3u8">Discovery Home & Health</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2582.m3u8">Discovery Science</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2587.m3u8">Discovery Theatre</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2592.m3u8">Discovery Turbo</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2602.m3u8">Animal Planet</button>
+    <button data-url="https://embedcanais.com/nationalgeographic/">National Geographic</button>    
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2617.m3u8">History Channel</button>
+    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2622.m3u8">History 2</button>
     <button data-url="https://embedcanais.com/curta/">Curta!</button>
   </div>
 
@@ -187,30 +211,55 @@
   </div>
 
   <script>
+    // Variável global para manter a instância do HLS e poder destruí-la ao trocar de canal.
+    let hls = null;
+    // Variável para controlar se o usuário já interagiu com a página.
+    let userHasInteracted = false;
+
     function createPlayer(url) {
+      // Verifica se a URL é de um stream HLS (contém .m3u, .m3u8, ou .m3u8?)
+      if (url.includes('.m3u')) {
+        const video = document.createElement('video');
+        video.id = 'player';
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.autoplay = true;
+        // Só inicia mudo se for a primeira interação. Depois, tenta iniciar com som.
+        video.muted = !userHasInteracted;
+        video.controls = true; // Mostra os controles nativos do vídeo
+
+        if (Hls.isSupported()) {
+          hls = new Hls();
+          hls.loadSource(url);
+          hls.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          // Suporte nativo em navegadores como o Safari
+          video.src = url;
+        }
+        return video;
+      }
+
+      // Lógica original para iframes
       const player = document.createElement('iframe');
       player.id = 'player';
-      // Adiciona parâmetros de autoplay. Alguns players usam 'autoplay=1', outros 'autostart=true'.
       const autoPlayUrl = new URL(url);
       autoPlayUrl.searchParams.set('autoplay', '1');
-      autoPlayUrl.searchParams.set('playauto', '1');
       autoPlayUrl.searchParams.set('autostart', 'true');
-      autoPlayUrl.searchParams.set('muted', '1'); // CORREÇÃO: 1 = sem som, necessário para autoplay.
       player.src = autoPlayUrl.toString();
-      
       player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-      // player.setAttribute('allowfullscreen', ''); // Removido para impedir a tela cheia automática pelo player
-      // O sandbox pode impedir o autoplay em alguns casos, vamos ser mais permissivos.
-      // Adiciona o atributo 'muted' diretamente ao iframe para garantir que o navegador o reconheça.
-      player.setAttribute('muted', 'true');
       player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation');
-      
       return player;
     }
 
     function changeChannel(url, clickedButton) {
       const playerContainer = document.getElementById('playerContainer');
       const oldPlayer = document.getElementById('player');
+
+      // Se houver uma instância do hls.js, destrua-a para liberar recursos.
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
 
       if (oldPlayer) {
         playerContainer.removeChild(oldPlayer);
@@ -221,6 +270,13 @@
       const newPlayer = createPlayer(url);
 
       playerContainer.appendChild(newPlayer); // Adiciona o player ao container
+
+      // Se o player for um vídeo, garante que o som esteja ativado.
+      setTimeout(() => {
+        if (newPlayer.tagName === 'VIDEO') {
+          newPlayer.muted = false;
+        }
+      }, 50); // Pequeno atraso para garantir que o player carregou
 
       document.querySelectorAll('#controls button').forEach(button => {
         button.classList.remove('active');
@@ -254,6 +310,22 @@
 
     // Carrega o canal inicial quando a página é aberta
     document.addEventListener('DOMContentLoaded', () => {
+      const welcomeOverlay = document.getElementById('welcome-overlay');
+
+      welcomeOverlay.addEventListener('click', () => {
+        userHasInteracted = true; // Marca que o usuário interagiu
+        welcomeOverlay.style.display = 'none'; // Esconde a tela de boas-vindas
+
+        // Carrega o canal inicial somente após a primeira interação
+        const initialButton = document.querySelector('#controls button.active');
+        if (initialButton) {
+          const url = initialButton.dataset.url;
+          changeChannel(url, initialButton);
+        }
+
+        requestFullscreenFromUserAction(); // Opcional: tenta entrar em tela cheia
+      }, { once: true }); // O evento só vai disparar uma vez
+
       // Adiciona o número na frente de cada nome de canal
       const channelButtons = document.querySelectorAll('#controls button');
       channelButtons.forEach((button, index) => { // Adiciona o número e o evento de clique
@@ -264,14 +336,6 @@
           changeChannel(url, button);
         });
       });
-
-      const initialButton = document.querySelector('#controls button.active');
-      if (initialButton) {
-        // Pega a URL do atributo data-url
-        const url = initialButton.dataset.url;
-        // Carrega o canal inicial sem tentar ir para tela cheia automaticamente
-        changeChannel(url, initialButton); 
-      }
     });
 
     // Lógica para mostrar/esconder a barra de canais
