@@ -351,13 +351,13 @@
       } else if (event.key === 'Enter') {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
-      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ChannelUp' || event.key === 'ChannelDown') {
         event.preventDefault(); // Impede a rolagem da página com as setas
         cancelNumericInput(); // Cancela qualquer digitação de canal pendente
 
         showControls(); // Mostra os controles ao navegar
         let nextIndex;
-        if (event.key === 'ArrowUp') { // Seta para cima sobe o canal (crescente)
+        if (event.key === 'ArrowUp' || event.key === 'ChannelUp') { // Seta para cima ou CH+ sobe o canal (crescente)
           // Calcula o índice do próximo canal, voltando ao primeiro se estiver no último
           nextIndex = (currentIndex + 1) % buttons.length;
         } else { // ArrowDown - Seta para baixo desce o canal (decrescente)
