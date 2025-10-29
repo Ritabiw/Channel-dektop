@@ -1,4 +1,4 @@
-<!doctype html>
+5555<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -11,7 +11,8 @@
       height: 100%;
       overflow: hidden; /* Esconde barras de rolagem */
       background-color: #000; /* Fundo preto para imersão */
-    }
+      font-family: system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif; /* Pilha de fontes moderna e profissional */
+    }    
     #playerContainer {
       width: 100%;
       height: 100%;
@@ -56,9 +57,33 @@
       background-color: #007bff; /* Cor para o botão ativo */
       border-color: #0056b3;
     }
+    #channel-input-display {
+      position: absolute;
+      top: 20px; /* Distância do topo */
+      right: 20px; /* Distância da direita */
+      z-index: 20; /* Mais alto que os controles */
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      font-size: 6vw; /* Tamanho de fonte ajustado para o canto */
+      font-weight: bold; /* CORREÇÃO: 'bold' é o valor correto para negrito */
+      font-family: 'Courier New', Courier, monospace; /* Fonte monoespaçada para números */
+      padding: 10px 25px;
+      border-radius: 10px;
+      border: 2px solid #fff;
+      transition: opacity 0.3s ease-in-out;
+    }
+    #channel-input-display.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #channel-input-display.invalid {
+      color: #ff4d4d; /* Cor vermelha para o texto */
+      border-color: #ff4d4d; /* Cor vermelha para a borda */
+    }
   </style>
 </head>
 <body>
+  <div id="channel-input-display" class="hidden"></div>
   <div id="controls">
     <!-- TV Aberta -->
     <button class="active" data-url="https://embedcanais.com/globosp/">Globo</button>
@@ -168,12 +193,13 @@
       // Adiciona parâmetros de autoplay. Alguns players usam 'autoplay=1', outros 'autostart=true'.
       const autoPlayUrl = new URL(url);
       autoPlayUrl.searchParams.set('autoplay', '1');
+      autoPlayUrl.searchParams.set('playauto', '1');
       autoPlayUrl.searchParams.set('autostart', 'true');
       autoPlayUrl.searchParams.set('muted', '1'); // CORREÇÃO: 1 = sem som, necessário para autoplay.
       player.src = autoPlayUrl.toString();
       
-      player.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
-      player.setAttribute('allowfullscreen', '');
+      player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      // player.setAttribute('allowfullscreen', ''); // Removido para impedir a tela cheia automática pelo player
       // O sandbox pode impedir o autoplay em alguns casos, vamos ser mais permissivos.
       // Adiciona o atributo 'muted' diretamente ao iframe para garantir que o navegador o reconheça.
       player.setAttribute('muted', 'true');
@@ -193,7 +219,8 @@
       if (!url) return; // Não faz nada se a URL for inválida
 
       const newPlayer = createPlayer(url);
-      playerContainer.appendChild(newPlayer);
+
+      playerContainer.appendChild(newPlayer); // Adiciona o player ao container
 
       document.querySelectorAll('#controls button').forEach(button => {
         button.classList.remove('active');
@@ -201,6 +228,16 @@
 
       clickedButton.classList.add('active');
       clickedButton.focus(); // Devolve o foco para o botão ativo, garantindo a continuidade da navegação.
+    }
+
+    // Nova função centralizada para selecionar um canal pelo seu índice na lista
+    function selectChannelByIndex(index) {
+      const buttons = document.querySelectorAll('#controls button');
+      if (index >= 0 && index < buttons.length) {
+        const targetButton = buttons[index];
+        targetButton?.click(); // Reutiliza a lógica de clique existente
+        targetButton?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
     }
 
     function requestFullscreenFromUserAction() {
@@ -239,6 +276,7 @@
     // Lógica para mostrar/esconder a barra de canais
     let controlsTimeout = null;
     const controls = document.getElementById('controls');
+    const channelInputDisplay = document.getElementById('channel-input-display');
 
     function showControls() {
       controls.classList.remove('hidden');
@@ -258,6 +296,13 @@
     let channelInputBuffer = '';
     let channelInputTimeout = null;
 
+    // Nova função para centralizar o cancelamento da entrada numérica
+    function cancelNumericInput() {
+      clearTimeout(channelInputTimeout);
+      channelInputBuffer = '';
+      channelInputDisplay.classList.add('hidden');
+    }
+
     // Adiciona a funcionalidade de mudar de canal com as setas do teclado
     window.addEventListener('keydown', (event) => {
       const buttons = Array.from(document.querySelectorAll('#controls button'));
@@ -266,54 +311,63 @@
       const isNumericKey = event.key >= '0' && event.key <= '9';
       let nextIndex;
 
-      // Mostra os controles para dar feedback visual e esconde após 3s
-      resetControlsTimeout();
-
-      if (event.key === 'ArrowRight') {
-        nextIndex = currentIndex + 1;
-
-        if (nextIndex >= buttons.length) {
-          nextIndex = 0; // Volta para o primeiro canal
+      if (event.key === '0') {
+        // Mostra os controles para dar feedback visual e esconde após 3s
+        // Se o buffer estiver vazio, o '0' apenas mostra os controles.
+        if (channelInputBuffer === '') {
+          resetControlsTimeout();
+          return; // Impede que o '0' seja adicionado ao buffer se for o primeiro dígito.
         }
-        buttons[nextIndex]?.click(); // Apenas troca o canal, sem mostrar a guia
-        // A chamada de fullscreen já está no evento de 'click' do botão
-        buttons[nextIndex]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      } else if (event.key === 'ArrowLeft') {
-        nextIndex = currentIndex - 1;
-        if (nextIndex < 0) {
-          nextIndex = buttons.length - 1; // Vai para o último canal
-        }
-        buttons[nextIndex]?.click();
-        // A chamada de fullscreen já está no evento de 'click' do botão
-        // A barra não aparece, apenas troca o canal
-        buttons[nextIndex]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      } else if (isNumericKey) {
+      }
+      
+      if (isNumericKey) {
         // Limpa o timeout anterior se o usuário digitar outro número rapidamente
+        resetControlsTimeout(); // Mostra os controles ao digitar um número
         clearTimeout(channelInputTimeout);
 
-        // Adiciona o número digitado ao buffer
         channelInputBuffer += event.key;
+        channelInputDisplay.textContent = channelInputBuffer;
+        channelInputDisplay.classList.remove('hidden');
 
         // Define um timeout para mudar de canal após o usuário parar de digitar
         channelInputTimeout = setTimeout(() => {
           const channelNumber = parseInt(channelInputBuffer, 10);
-          channelInputBuffer = ''; // Limpa o buffer
-
-          // O índice do array é baseado em 0, então subtraímos 1 do número do canal
-          if (channelNumber > 0 && channelNumber <= buttons.length) {
-            const targetButton = buttons[channelNumber - 1];
-            const url = targetButton.dataset.url;
-            changeChannel(url, targetButton); // Chamada direta da função
-            targetButton?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          const isValidChannel = channelNumber > 0 && channelNumber <= buttons.length;
+          
+          if (isValidChannel) {
+            // Usa a nova função centralizada para mudar de canal
+            selectChannelByIndex(channelNumber - 1);
+            cancelNumericInput(); // Limpa e esconde imediatamente
+          } else {
+            // Canal inválido: mostra feedback visual em vermelho
+            channelInputDisplay.classList.add('invalid');
+            // Esconde o display vermelho após um curto período
+            setTimeout(() => {
+              channelInputDisplay.classList.remove('invalid');
+              cancelNumericInput();
+            }, 700); // Mantém o display vermelho por 0.7 segundos
           }
         }, 500); // Espera 0.5 segundos antes de mudar (ajustado para melhor responsividade)
       } else if (event.key === 'Enter') {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
-      } else if (event.key === 'Tab') {
-        event.preventDefault(); // Impede o comportamento padrão do Tab (mudar foco)
-        // Permite que o usuário entre em tela cheia manualmente
-        requestFullscreenFromUserAction();
+      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        event.preventDefault(); // Impede a rolagem da página com as setas
+        cancelNumericInput(); // Cancela qualquer digitação de canal pendente
+
+        resetControlsTimeout(); // Mostra os controles ao navegar
+
+        let nextIndex;
+        if (event.key === 'ArrowUp') { // Seta para cima sobe o canal (crescente)
+          // Calcula o índice do próximo canal, voltando ao primeiro se estiver no último
+          nextIndex = (currentIndex + 1) % buttons.length;
+        } else { // ArrowDown - Seta para baixo desce o canal (decrescente)
+          // Calcula o índice do canal anterior, indo para o último se estiver no primeiro
+          nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+        }
+
+        // Usa a nova função centralizada para mudar de canal
+        selectChannelByIndex(nextIndex);
       } else if (event.key === ' ' || event.code === 'Space') {
         event.preventDefault(); // Impede o comportamento padrão do espaço (rolar a página)
         
@@ -333,5 +387,16 @@
 
     // Inicia o comportamento de mostrar/esconder ao carregar a página
     controls.classList.add('hidden');
+
+    // Garante que a janela principal recupere o foco após um clique no iframe.
+    // Isso é crucial para que os atalhos de teclado (números, setas) continuem funcionando.
+    window.addEventListener('blur', () => {
+      // Um pequeno atraso é necessário para que o navegador processe o elemento que recebeu o foco.
+      setTimeout(() => {
+        if (document.activeElement.tagName === 'IFRAME') {
+          window.focus();
+        }
+      }, 0);
+    });
   </script>
 </html>
