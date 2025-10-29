@@ -300,6 +300,9 @@
 
     // Adiciona a funcionalidade de mudar de canal com as setas do teclado
     window.addEventListener('keydown', (event) => {
+      // LINHA DE DIAGNÓSTICO: Mostra no console qual tecla foi pressionada.
+      console.log('Tecla pressionada:', event.key);
+
       const buttons = Array.from(document.querySelectorAll('#controls button'));
       const activeButton = document.querySelector('#controls button.active');
       const currentIndex = buttons.indexOf(activeButton);
