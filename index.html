@@ -295,10 +295,21 @@
 
         if (Hls.isSupported()) {
           hls = new Hls();
+          // Adiciona um listener para erros de mídia ou rede
+          hls.on(Hls.Events.ERROR, function (event, data) {
+            if (data.fatal) {
+              console.error('Erro fatal no HLS.js:', data);
+              // Tenta se recuperar de um erro de mídia destruindo e recriando o HLS
+              if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+                console.log('Tentando se recuperar de um erro de mídia...');
+                hls.recoverMediaError();
+              }
+            }
+          });
           hls.loadSource(url);
           hls.attachMedia(video);
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          // Suporte nativo em navegadores como o Safari
+          // Suporte nativo em navegadores como Safari
           video.src = url;
         }
         return video;
@@ -340,31 +351,30 @@
 
       // Adiciona um pequeno atraso para o efeito de estática ser visível
       setTimeout(() => {
+        // 1. Cria o novo player
         const newPlayer = createPlayer(channel.url);
-        playerContainer.appendChild(newPlayer);        
+        // 2. Adiciona o novo player ao container
+        playerContainer.appendChild(newPlayer);
 
+        // 3. Tenta iniciar a reprodução APÓS o player estar no DOM
         if (newPlayer.tagName === 'VIDEO') {
-          // Para vídeos, a forma mais robusta é chamar .play()
-          // Isso retorna uma Promise que nos informa se o autoplay funcionou.
           const playPromise = newPlayer.play();
-
           if (playPromise !== undefined) {
             playPromise.then(() => {
               // Autoplay com som iniciado com sucesso!
-              newPlayer.muted = false; // Garante que o som está ativo.
-              staticOverlay.style.display = 'none'; // Esconde a estática após o vídeo começar.
+              newPlayer.muted = false;
+              staticOverlay.style.display = 'none';
             }).catch(error => {
               // Autoplay foi bloqueado pelo navegador.
               console.error("Autoplay bloqueado:", error);
-              // Mesmo que bloqueado, o player está na tela. Escondemos a estática.
               staticOverlay.style.display = 'none';
             });
           }
         } else {
-          // Para iframes, apenas escondemos a estática.
+          // Para iframes, apenas escondemos a estática após um tempo.
           staticOverlay.style.display = 'none';
         }
-      }, 100); // Aumentei um pouco o atraso para dar tempo do player carregar
+      }, 50); // Reduzi o atraso para uma troca de canal mais ágil
     }
 
     // Nova função centralizada para selecionar um canal pelo seu índice na lista
