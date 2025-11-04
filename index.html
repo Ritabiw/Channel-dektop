@@ -1,4 +1,4 @@
-5555<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -25,37 +25,11 @@
       height: 100%;
       border: 0;
     }
-    #controls {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      z-index: 10; /* Garante que os controles fiquem sobre o vídeo */
-      background-color: rgba(34, 34, 34, 0.8); /* Fundo semi-transparente */
-      padding: 10px;
-      text-align: center;
-      overflow-x: auto; /* Permite rolagem horizontal */
-      white-space: nowrap; /* Impede que os botões quebrem linha */
-      transition: opacity 0.5s ease, transform 0.5s ease; /* Animação suave */
-    }
-    #controls.hidden {
-      opacity: 0;
-      transform: translateY(100%); /* Desliza para baixo e para fora da tela */
-      pointer-events: none; /* Impede interação quando escondido */
-    }
-    #controls button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 0 5px; /* Botões voltam a ter margem horizontal */
-      cursor: pointer;
-      border: 1px solid #555;
-      background-color: #333;
-      color: white;
-      display: inline-block; /* Botões voltam a se alinhar horizontalmente */
-      /* width: 100%; e margin-bottom: 5px; removidos */
-    }
-    #controls button.active {
-      background-color: #007bff; /* Cor para o botão ativo */
-      border-color: #0056b3;
+    /* Desativa a interação do mouse com o player de vídeo/iframe */
+    #player {
+      pointer-events: none;
+      /* Garante que o vídeo preencha a tela sem distorcer, cortando o excesso se necessário */
+      object-fit: cover;
     }
     #channel-input-display {
       position: absolute;
@@ -80,6 +54,67 @@
       color: #ff4d4d; /* Cor vermelha para o texto */
       border-color: #ff4d4d; /* Cor vermelha para a borda */
     }
+    #channel-info-display {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 20;
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      font-size: 3vw;
+      font-weight: bold;
+      font-family: system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      padding: 10px 20px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      pointer-events: none;
+    }
+    #program-guide {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      /* Fundo com gradiente e sombra para um visual mais moderno */
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)); /* Mais transparente */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2); /* Sombra mais sutil */
+      color: white;
+      padding: 15px 20px; /* Reduz o preenchimento vertical */
+      box-sizing: border-box;
+      transform: translateY(100%);      
+      transition: transform 0.4s ease-out;
+      pointer-events: none;
+      text-align: center; /* Centraliza todo o texto dentro do painel */
+    }
+    #program-guide.visible {
+      transform: translateY(0);
+    }
+    #program-guide .channel-name {
+      font-size: 2.2em; /* Reduz o tamanho do nome do canal */
+      font-weight: bold;
+      margin-bottom: 10px; /* Reduz o espaço abaixo do nome */
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5); /* Sombra no texto para legibilidade */
+    }
+    #program-guide .program-info {
+      font-size: 1.1em; /* Reduz a fonte da programação */
+      margin-top: 8px; /* Ajusta o espaço entre as linhas de programa */
+    }
+    #program-guide .program-info .label {
+      /* Cor mais clara para o rótulo, mas ainda sutil */
+      color: #ccc;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    #static-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: url('https://i.gifer.com/origin/f5/f5baef4b6b6677020ab8d414c79aa991_w200.gif');
+      z-index: 999;
+      display: none; /* Começa escondido */
+      opacity: 0.7;
+    }
     #welcome-overlay {
       position: fixed;
       top: 0;
@@ -103,108 +138,20 @@
 <body>
   <div id="welcome-overlay">Clique para iniciar e ativar o som</div>
 
-  <div id="channel-input-display" class="hidden"></div>
-  <div id="controls">
-    <!-- TV Aberta -->
-    <button class="active" data-url="http://granpirosh.top/live/841866657/c581b7318b/289881.m3u8">Globo</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/244071.m3u8">Record</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/244161.m3u8">SBT</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/255465.m3u8">Band</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/80170.m3u8">RedeTV!</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/364662.m3u8">TV Cultura</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/159.m3u8">Futura</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/364678.m3u8">TV Brasil</button>    
-    <button data-url="https://d12e4o88jd8gex.cloudfront.net/out/v1/cea3de0b76ac4e82ab8ee0fd3f17ce12/index_1.m3u8">Rede Vida</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/240806.m3u8">Canção Nova</button>
-    <button data-url="https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fcdn.live.br1.jmvstream.com%2Fw%2FLVW-9716%2FLVW9716_HbtQtezcaw%2Fchunklist.m3u8">TV Aparecida</button>
-    <button data-url="https://embedcanais.com/multishow/">Multishow</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/52925853b7bdb3373184029fcd6e0f78/gnt.m3u8">GNT</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/38380a62107139581f856d34fe695cb3/viva.m3u8">Globoplay Novelas</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/e73a43172b483cb803cb28825a6c9297/mtv.m3u8">MTV</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/146.m3u8">Canal Brasil</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/687.m3u8">Comedy Central</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ce7180b9e662324883125f23e5c790cf/tlc.m3u8">TLC</button>
-
-    <!-- Filmes e Séries -->
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/635.m3u8">Telecine Premium</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/615.m3u8">Telecine Action</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ebe602454895327b0b7cb8fb8fbf2e1d/telecinepipoca.m3u8">Telecine Pipoca</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/a432e444cb0c175c45b9aaabe72b6727/telecinefun.m3u8">Telecine Fun</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/589.m3u8">Telecine Touch</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/620.m3u8">Telecine Cult</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/05613f75bd610dce50649e227ec4988c/hbo.m3u8">HBO</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/944e942bc2dba0e49d10e26302fdb072/hbo2.m3u8">HBO2</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/64c07fa2c057b7a9dbbab20ba8f89bcb/hbofamily.m3u8">HBO Family</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/e2223aa62f349d1db3e4c5b1d9e7a078/hboplus.m3u8">HBO Plus</button>
-    <button data-url="https://embedcanais.com/hbosignature/">HBO Signature</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/2cee9cb36e5c7e7d9c3815fda70a3fb4/hbopop.m3u8">HBO Pop</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/74442b879b0ae5b6c3d00416ffef32be/hboxtreme.m3u8">HBO Xtreme</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/9276004d1f9e71e9b8dfa6b776987932/hbomundi.m3u8">HBO Mundi</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/692.m3u8">Megapix</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/682.m3u8">Cinemax</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/749.m3u8">Warner Channel</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/21229.m3u8">Sony Channel</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/743.m3u8">Universal TV</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/676.m3u8">AXN</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/fcc63cd6c510a65effe68820e75cb75f/tnt.m3u8">TNT</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/738.m3u8">TNT Séries</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/264555.m3u8">TNT Novelas</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/707.m3u8">Space</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/697.m3u8">Paramount Network</button>
-    <button data-url="https://embedcanais.com/fx/">FX</button>
-    <button data-url="https://embedcanais.com/amc/">AMC</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/713.m3u8">Studio Universal</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/666.m3u8">A&E</button>
-
-    <!-- Infantil -->
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/352.m3u8">Cartoon Network</button>
-    <button data-url="">Disney Channel</button>
-    <button data-url="https://embedcanais.com/boomerang/">Boomerang</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/372.m3u8">Nickelodeon</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/368.m3u8">Nick Jr.</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/364.m3u8">Discovery Kids</button>
-    <button data-url="https://embedcanais.com/disneyjunior/">Disney Junior</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/377227.m3u8">Gloob</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/377232.m3u8">Gloobinho</button>
-    <button data-url="https://embedcanais.com/tooncast/">Tooncast</button>
-
-    <!-- Esportes -->
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/118881.m3u8">SporTV</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/554.m3u8">SporTV 2</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/559.m3u8">SporTV 3</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/309458.m3u8">ESPN</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/215.m3u8">ESPN 2</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/220.m3u8">ESPN 3</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/225.m3u8">ESPN 4</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/da7d89ae11e4aa05410a083ff0dbcb9d/espn5.m3u8">ESPN 5 (Fox Sports)</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/235.m3u8">BandSports</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/494.m3u8">Premiere</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/499.m3u8">Premiere 2</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/504.m3u8">Premiere 3</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/509.m3u8">Premiere 4</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/514.m3u8">Premiere 5</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/519.m3u8">Premiere 6</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/519.m3u8">Premiere 7</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/380749.m3u8">Premiere 8</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/240.m3u8">Combate</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/55f18e9a453685fd88baa0a6af6a4eb7/off.m3u8">Off</button>
-
-    <!-- Documentários e Notícias -->
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/318c24d556d8144103ee6e6ba6e7fcf5/globonews.m3u8">GloboNews</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ee19eef956564517cf6439e86931e03d/cnnbrasil.m3u8">CNN Brasil</button>
-    <button data-url="https://embedcanais.com/recordnews/">Record News</button>
-    <button data-url="https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/a105eb3e5cdb5317510ef8923cdf93ba/bandnews.m3u8">BandNews TV</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2577.m3u8">Discovery Channel</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2572.m3u8">Discovery Home & Health</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2582.m3u8">Discovery Science</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2587.m3u8">Discovery Theatre</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2592.m3u8">Discovery Turbo</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2602.m3u8">Animal Planet</button>
-    <button data-url="https://embedcanais.com/nationalgeographic/">National Geographic</button>    
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2617.m3u8">History Channel</button>
-    <button data-url="http://granpirosh.top/live/841866657/c581b7318b/2622.m3u8">History 2</button>
-    <button data-url="https://embedcanais.com/curta/">Curta!</button>
+  <div id="static-overlay"></div>
+  <div id="channel-info-display"></div>
+  <div id="program-guide">
+    <div id="guide-channel-name" class="channel-name"></div>
+    <div class="program-info">
+      <span class="label">AGORA:</span>
+      <span id="guide-current-program">Informação do programa indisponível</span>
+    </div>
+    <div class="program-info">
+      <span class="label">A SEGUIR:</span>
+      <span id="guide-next-program">Informação do programa indisponível</span>
+    </div>
   </div>
+  <div id="channel-input-display" class="hidden"></div>
 
   <div id="playerContainer">
     <!-- O player será inserido aqui pelo JavaScript -->
@@ -215,6 +162,124 @@
     let hls = null;
     // Variável para controlar se o usuário já interagiu com a página.
     let userHasInteracted = false;
+    // Variável para o timeout do display de informação do canal
+    let channelInfoTimeout = null;
+    let programGuideTimeout = null;
+
+    // Estrutura de dados para os canais
+    const channels = [
+      { name: "Globo", url: "http://granpirosh.top/live/841866657/c581b7318b/289881.m3u8"},
+      { name: "Record", url: "http://granpirosh.top/live/841866657/c581b7318b/244071.m3u8" },
+      { name: "SBT", url: "http://granpirosh.top/live/841866657/c581b7318b/244161.m3u8"},
+      { name: "Band", url: "http://granpirosh.top/live/841866657/c581b7318b/255465.m3u8"},
+      { name: "RedeTV!", url: "http://granpirosh.top/live/841866657/c581b7318b/80170.m3u8" },
+      { name: "TV Cultura", url: "http://granpirosh.top/live/841866657/c581b7318b/364662.m3u8" },
+      { name: "Futura", url: "http://granpirosh.top/live/841866657/c581b7318b/159.m3u8" },
+      { name: "TV Brasil", url: "http://granpirosh.top/live/841866657/c581b7318b/364678.m3u8" },
+      { name: "Rede Vida", url: "https://d12e4o88jd8gex.cloudfront.net/out/v1/cea3de0b76ac4e82ab8ee0fd3f17ce12/index_1.m3u8" },
+      { name: "Canção Nova", url: "http://granpirosh.top/live/841866657/c581b7318b/240806.m3u8" },
+      { name: "TV Aparecida", url: "https://www.m3u8player.online/embed/m3u8?url=https%3A%2F%2Fcdn.live.br1.jmvstream.com%2Fw%2FLVW-9716%2FLVW9716_HbtQtezcaw%2Fchunklist.m3u8" },
+      { name: "GNT", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/52925853b7bdb3373184029fcd6e0f78/gnt.m3u8" },
+      { name: "Globoplay Novelas", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/38380a62107139581f856d34fe695cb3/viva.m3u8" },
+      { name: "GloboNews", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/318c24d556d8144103ee6e6ba6e7fcf5/globonews.m3u8" },
+      { name: "CNN Brasil", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ee19eef956564517cf6439e86931e03d/cnnbrasil.m3u8" },
+      { name: "Record News", url: "https://embedcanais.com/recordnews/" },
+      { name: "BandNews TV", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/a105eb3e5cdb5317510ef8923cdf93ba/bandnews.m3u8" },
+      { name: "Multishow", url: "https://embedcanais.com/multishow/" },
+      { name: "MTV", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/e73a43172b483cb803cb28825a6c9297/mtv.m3u8" },
+      { name: "Canal Brasil", url: "http://granpirosh.top/live/841866657/c581b7318b/146.m3u8" },
+      { name: "Comedy Central", url: "http://granpirosh.top/live/841866657/c581b7318b/687.m3u8" },
+      { name: "TLC", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ce7180b9e662324883125f23e5c790cf/tlc.m3u8" },
+      // Filmes e Séries
+      { name: "Telecine Premium", url: "http://granpirosh.top/live/841866657/c581b7318b/635.m3u8" },
+      { name: "Telecine Action", url: "http://granpirosh.top/live/841866657/c581b7318b/615.m3u8" },
+      { name: "Telecine Pipoca", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/ebe602454895327b0b7cb8fb8fbf2e1d/telecinepipoca.m3u8" },
+      { name: "Telecine Fun", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/a432e444cb0c175c45b9aaabe72b6727/telecinefun.m3u8" },
+      { name: "Telecine Touch", url: "http://granpirosh.top/live/841866657/c581b7318b/589.m3u8" },
+      { name: "Telecine Cult", url: "http://granpirosh.top/live/841866657/c581b7318b/620.m3u8" },
+      { name: "HBO", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/05613f75bd610dce50649e227ec4988c/hbo.m3u8" },
+      { name: "HBO2", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/944e942bc2dba0e49d10e26302fdb072/hbo2.m3u8" },
+      { name: "HBO Family", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/64c07fa2c057b7a9dbbab20ba8f89bcb/hbofamily.m3u8" },
+      { name: "HBO Plus", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/e2223aa62f349d1db3e4c5b1d9e7a078/hboplus.m3u8" },
+      { name: "HBO Signature", url: "https://embedcanais.com/hbosignature/" },
+      { name: "HBO Pop", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/2cee9cb36e5c7e7d9c3815fda70a3fb4/hbopop.m3u8" },
+      { name: "HBO Xtreme", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/74442b879b0ae5b6c3d00416ffef32be/hboxtreme.m3u8" },
+      { name: "HBO Mundi", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/9276004d1f9e71e9b8dfa6b776987932/hbomundi.m3u8" },
+      { name: "Megapix", url: "http://granpirosh.top/live/841866657/c581b7318b/692.m3u8" },
+      { name: "Cinemax", url: "http://granpirosh.top/live/841866657/c581b7318b/682.m3u8" },
+      { name: "Warner Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/749.m3u8" },
+      { name: "Sony Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/21229.m3u8" },
+      { name: "Universal TV", url: "http://granpirosh.top/live/841866657/c581b7318b/743.m3u8" },
+      { name: "AXN", url: "http://granpirosh.top/live/841866657/c581b7318b/676.m3u8" },
+      { name: "TNT", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/fcc63cd6c510a65effe68820e75cb75f/tnt.m3u8" },
+      { name: "TNT Séries", url: "http://granpirosh.top/live/841866657/c581b7318b/738.m3u8" },
+      { name: "TNT Novelas", url: "http://granpirosh.top/live/841866657/c581b7318b/264555.m3u8" },
+      { name: "Space", url: "http://granpirosh.top/live/841866657/c581b7318b/707.m3u8" },
+      { name: "Paramount Network", url: "http://granpirosh.top/live/841866657/c581b7318b/697.m3u8" },
+      { name: "FX", url: "https://embedcanais.com/fx/" },
+      { name: "AMC", url: "https://embedcanais.com/amc/" },
+      { name: "Studio Universal", url: "http://granpirosh.top/live/841866657/c581b7318b/713.m3u8" },
+      { name: "A&E", url: "http://granpirosh.top/live/841866657/c581b7318b/666.m3u8" },
+      // Documentários e Notícias
+      { name: "Discovery Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/2577.m3u8" },
+      { name: "Discovery Home & Health", url: "http://granpirosh.top/live/841866657/c581b7318b/2572.m3u8" },
+      { name: "Discovery Science", url: "http://granpirosh.top/live/841866657/c581b7318b/2582.m3u8" },
+      { name: "Discovery Theatre", url: "http://granpirosh.top/live/841866657/c581b7318b/2587.m3u8" },
+      { name: "Discovery Turbo", url: "http://granpirosh.top/live/841866657/c581b7318b/2592.m3u8" },
+      { name: "Animal Planet", url: "http://granpirosh.top/live/841866657/c581b7318b/2602.m3u8" },
+      { name: "Off", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/55f18e9a453685fd88baa0a6af6a4eb7/off.m3u8" },
+      { name: "National Geographic", url: "https://embedcanais.com/nationalgeographic/" },
+      { name: "History Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/2617.m3u8" },
+      { name: "History 2", url: "http://granpirosh.top/live/841866657/c581b7318b/2622.m3u8" },
+      { name: "Curta!", url: "https://embedcanais.com/curta/" },
+      // Infantil
+      { name: "Cartoon Network", url: "http://granpirosh.top/live/841866657/c581b7318b/352.m3u8" },
+      { name: "Disney Channel", url: "" },
+      { name: "Boomerang", url: "https://embedcanais.com/boomerang/" },
+      { name: "Nickelodeon", url: "http://granpirosh.top/live/841866657/c581b7318b/372.m3u8" },
+      { name: "Nick Jr.", url: "http://granpirosh.top/live/841866657/c581b7318b/368.m3u8" },
+      { name: "Discovery Kids", url: "http://granpirosh.top/live/841866657/c581b7318b/364.m3u8" },
+      { name: "Disney Junior", url: "https://embedcanais.com/disneyjunior/" },
+      { name: "Gloob", url: "http://granpirosh.top/live/841866657/c581b7318b/377227.m3u8" },
+      { name: "Gloobinho", url: "http://granpirosh.top/live/841866657/c581b7318b/377232.m3u8" },
+      { name: "Tooncast", url: "https://embedcanais.com/tooncast/" },
+      // Esportes
+      { name: "Combate", url: "http://granpirosh.top/live/841866657/c581b7318b/240.m3u8" },
+      { name: "SporTV", url: "http://granpirosh.top/live/841866657/c581b7318b/118881.m3u8" },
+      { name: "SporTV 2", url: "http://granpirosh.top/live/841866657/c581b7318b/554.m3u8" },
+      { name: "SporTV 3", url: "http://granpirosh.top/live/841866657/c581b7318b/559.m3u8" },
+      { name: "ESPN", url: "http://granpirosh.top/live/841866657/c581b7318b/309458.m3u8" },
+      { name: "ESPN 2", url: "http://granpirosh.top/live/841866657/c581b7318b/215.m3u8" },
+      { name: "ESPN 3", url: "http://granpirosh.top/live/841866657/c581b7318b/220.m3u8" },
+      { name: "ESPN 4", url: "http://granpirosh.top/live/841866657/c581b7318b/225.m3u8" },
+      { name: "ESPN 5 (Fox Sports)", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/da7d89ae11e4aa05410a083ff0dbcb9d/espn5.m3u8" },
+      { name: "BandSports", url: "http://granpirosh.top/live/841866657/c581b7318b/235.m3u8" },
+      { name: "Premiere", url: "http://granpirosh.top/live/841866657/c581b7318b/494.m3u8" },
+      { name: "Premiere 2", url: "http://granpirosh.top/live/841866657/c581b7318b/499.m3u8" },
+      { name: "Premiere 3", url: "http://granpirosh.top/live/841866657/c581b7318b/504.m3u8" },
+      { name: "Premiere 4", url: "http://granpirosh.top/live/841866657/c581b7318b/509.m3u8" },
+      { name: "Premiere 5", url: "http://granpirosh.top/live/841866657/c581b7318b/514.m3u8" },
+      { name: "Premiere 6", url: "http://granpirosh.top/live/841866657/c581b7318b/519.m3u8" },
+      { name: "Premiere 7", url: "http://granpirosh.top/live/841866657/c581b7318b/519.m3u8" },
+      { name: "Premiere 8", url: "http://granpirosh.top/live/841866657/c581b7318b/380749.m3u8" },
+    ];
+    let currentChannelIndex = 0;
+
+    function showProgramGuide(channel) {
+      const guide = document.getElementById('program-guide');
+      document.getElementById('guide-channel-name').textContent = `${channels.indexOf(channel) + 1}. ${channel.name}`;
+      
+      // Atualiza as informações de programação com base nos dados do canal
+      const currentProgramEl = document.getElementById('guide-current-program');
+      const nextProgramEl = document.getElementById('guide-next-program');
+
+      currentProgramEl.textContent = channel.programacaoAtual || "Informação indisponível";
+      nextProgramEl.textContent = channel.proximaProgramacao || "Informação indisponível";
+
+      guide.classList.add('visible');
+      clearTimeout(programGuideTimeout);
+      programGuideTimeout = setTimeout(() => guide.classList.remove('visible'), 5000); // Esconde após 5 segundos
+    }
 
     function createPlayer(url) {
       // Verifica se a URL é de um stream HLS (contém .m3u, .m3u8, ou .m3u8?)
@@ -226,7 +291,7 @@
         video.autoplay = true;
         // Só inicia mudo se for a primeira interação. Depois, tenta iniciar com som.
         video.muted = !userHasInteracted;
-        video.controls = true; // Mostra os controles nativos do vídeo
+        video.controls = false; // Esconde os controles nativos do vídeo
 
         if (Hls.isSupported()) {
           hls = new Hls();
@@ -251,9 +316,15 @@
       return player;
     }
 
-    function changeChannel(url, clickedButton) {
+    function changeChannel(channel) {
       const playerContainer = document.getElementById('playerContainer');
       const oldPlayer = document.getElementById('player');
+      const staticOverlay = document.getElementById('static-overlay');
+
+      // Mostra o efeito de estática
+      staticOverlay.style.display = 'block';
+
+      showProgramGuide(channel);
 
       // Se houver uma instância do hls.js, destrua-a para liberar recursos.
       if (hls) {
@@ -265,35 +336,31 @@
         playerContainer.removeChild(oldPlayer);
       }
 
-      if (!url) return; // Não faz nada se a URL for inválida
+      if (!channel || !channel.url) return; // Não faz nada se a URL for inválida
 
-      const newPlayer = createPlayer(url);
-
-      playerContainer.appendChild(newPlayer); // Adiciona o player ao container
-
-      // Se o player for um vídeo, garante que o som esteja ativado.
+      // Adiciona um pequeno atraso para o efeito de estática ser visível
       setTimeout(() => {
-        if (newPlayer.tagName === 'VIDEO') {
-          newPlayer.muted = false;
-        }
+        const newPlayer = createPlayer(channel.url);
+        playerContainer.appendChild(newPlayer);
+
+        // Esconde a estática
+        staticOverlay.style.display = 'none';
+
+        // Se o player for um vídeo, garante que o som esteja ativado.
+        setTimeout(() => {
+          if (newPlayer.tagName === 'VIDEO') {
+            newPlayer.muted = false;
+          }
+        }, 50); // Pequeno atraso para garantir que o player carregou
       }, 50); // Pequeno atraso para garantir que o player carregou
-
-      document.querySelectorAll('#controls button').forEach(button => {
-        button.classList.remove('active');
-      });
-
-      clickedButton.classList.add('active');
-      clickedButton.focus(); // Devolve o foco para o botão ativo, garantindo a continuidade da navegação.
-      hideControls(); // Esconde os controles após selecionar um canal
     }
 
     // Nova função centralizada para selecionar um canal pelo seu índice na lista
     function selectChannelByIndex(index) {
-      const buttons = document.querySelectorAll('#controls button');
-      if (index >= 0 && index < buttons.length) {
-        const targetButton = buttons[index];
-        targetButton?.click(); // Reutiliza a lógica de clique existente
-        targetButton?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      if (index >= 0 && index < channels.length) {
+        currentChannelIndex = index;
+        const targetChannel = channels[index];
+        changeChannel(targetChannel);
       }
     }
 
@@ -317,39 +384,15 @@
         welcomeOverlay.style.display = 'none'; // Esconde a tela de boas-vindas
 
         // Carrega o canal inicial somente após a primeira interação
-        const initialButton = document.querySelector('#controls button.active');
-        if (initialButton) {
-          const url = initialButton.dataset.url;
-          changeChannel(url, initialButton);
-        }
+        selectChannelByIndex(currentChannelIndex);
 
         requestFullscreenFromUserAction(); // Opcional: tenta entrar em tela cheia
       }, { once: true }); // O evento só vai disparar uma vez
-
-      // Adiciona o número na frente de cada nome de canal
-      const channelButtons = document.querySelectorAll('#controls button');
-      channelButtons.forEach((button, index) => { // Adiciona o número e o evento de clique
-        const channelNumber = index + 1;
-        button.textContent = `${channelNumber}. ${button.textContent}`;
-        button.addEventListener('click', () => {
-          const url = button.dataset.url;
-          changeChannel(url, button);
-        });
-      });
     });
 
     // Lógica para mostrar/esconder a barra de canais
     let controlsTimeout = null;
-    const controls = document.getElementById('controls');
     const channelInputDisplay = document.getElementById('channel-input-display');
-
-    function showControls() {
-      controls.classList.remove('hidden');
-    }
-
-    function hideControls() {
-      controls.classList.add('hidden');
-    }
 
     let channelInputBuffer = '';
     let channelInputTimeout = null;
@@ -357,7 +400,6 @@
     // Nova função para centralizar o cancelamento da entrada numérica
     function cancelNumericInput() {
       clearTimeout(channelInputTimeout);
-      hideControls(); // Esconde os controles ao cancelar a entrada
       channelInputBuffer = '';
       channelInputDisplay.classList.add('hidden');
     }
@@ -367,29 +409,10 @@
       // LINHA DE DIAGNÓSTICO: Mostra no console qual tecla foi pressionada.
       console.log('Tecla pressionada:', event.key);
 
-      const buttons = Array.from(document.querySelectorAll('#controls button'));
-      const activeButton = document.querySelector('#controls button.active');
-      const currentIndex = buttons.indexOf(activeButton);
       const isNumericKey = event.key >= '0' && event.key <= '9';
-      let nextIndex;
-
-      if (event.key === '0') {
-        // Mostra os controles para dar feedback visual e esconde após 3s
-        // Se o buffer estiver vazio, o '0' apenas mostra os controles.
-        if (channelInputBuffer === '') {
-          if (controls.classList.contains('hidden')) { // Se os controles estiverem escondidos, mostre-os
-            showControls();
-          } else {
-            cancelNumericInput(); // Esconde se já estiver visível
-          }
-
-          return; // Impede que o '0' seja adicionado ao buffer se for o primeiro dígito.
-        }
-      }
       
       if (isNumericKey) {
         // Limpa o timeout anterior se o usuário digitar outro número rapidamente
-        showControls(); // Mostra os controles ao digitar um número
         clearTimeout(channelInputTimeout);
 
         channelInputBuffer += event.key;
@@ -399,7 +422,7 @@
         // Define um timeout para mudar de canal após o usuário parar de digitar
         channelInputTimeout = setTimeout(() => {
           const channelNumber = parseInt(channelInputBuffer, 10);
-          const isValidChannel = channelNumber > 0 && channelNumber <= buttons.length;
+          const isValidChannel = channelNumber > 0 && channelNumber <= channels.length;
           
           if (isValidChannel) {
             // Usa a nova função centralizada para mudar de canal
@@ -421,15 +444,13 @@
       } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ChannelUp' || event.key === 'ChannelDown') {
         event.preventDefault(); // Impede a rolagem da página com as setas
         cancelNumericInput(); // Cancela qualquer digitação de canal pendente
-
-        showControls(); // Mostra os controles ao navegar
         let nextIndex;
         if (event.key === 'ArrowUp' || event.key === 'ChannelUp') { // Seta para cima ou CH+ sobe o canal (crescente)
           // Calcula o índice do próximo canal, voltando ao primeiro se estiver no último
-          nextIndex = (currentIndex + 1) % buttons.length;
+          nextIndex = (currentChannelIndex + 1) % channels.length;
         } else { // ArrowDown - Seta para baixo desce o canal (decrescente)
           // Calcula o índice do canal anterior, indo para o último se estiver no primeiro
-          nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+          nextIndex = (currentChannelIndex - 1 + channels.length) % channels.length;
         }
 
         // Usa a nova função centralizada para mudar de canal
@@ -444,15 +465,12 @@
           player.focus();
         } else {
           // Se não houver player, recarrega o canal ativo como fallback.
-          activeButton?.click();
+          selectChannelByIndex(currentChannelIndex);
         }
       } else {
         return; // Ignora outras teclas
       }
     });
-
-    // Inicia o comportamento de mostrar/esconder ao carregar a página
-    hideControls();
 
     // Garante que a janela principal recupere o foco após um clique no iframe.
     // Isso é crucial para que os atalhos de teclado (números, setas) continuem funcionando.
