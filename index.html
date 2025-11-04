@@ -341,18 +341,30 @@
       // Adiciona um pequeno atraso para o efeito de estática ser visível
       setTimeout(() => {
         const newPlayer = createPlayer(channel.url);
-        playerContainer.appendChild(newPlayer);
+        playerContainer.appendChild(newPlayer);        
 
-        // Esconde a estática
-        staticOverlay.style.display = 'none';
+        if (newPlayer.tagName === 'VIDEO') {
+          // Para vídeos, a forma mais robusta é chamar .play()
+          // Isso retorna uma Promise que nos informa se o autoplay funcionou.
+          const playPromise = newPlayer.play();
 
-        // Se o player for um vídeo, garante que o som esteja ativado.
-        setTimeout(() => {
-          if (newPlayer.tagName === 'VIDEO') {
-            newPlayer.muted = false;
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              // Autoplay com som iniciado com sucesso!
+              newPlayer.muted = false; // Garante que o som está ativo.
+              staticOverlay.style.display = 'none'; // Esconde a estática após o vídeo começar.
+            }).catch(error => {
+              // Autoplay foi bloqueado pelo navegador.
+              console.error("Autoplay bloqueado:", error);
+              // Mesmo que bloqueado, o player está na tela. Escondemos a estática.
+              staticOverlay.style.display = 'none';
+            });
           }
-        }, 50); // Pequeno atraso para garantir que o player carregou
-      }, 50); // Pequeno atraso para garantir que o player carregou
+        } else {
+          // Para iframes, apenas escondemos a estática.
+          staticOverlay.style.display = 'none';
+        }
+      }, 100); // Aumentei um pouco o atraso para dar tempo do player carregar
     }
 
     // Nova função centralizada para selecionar um canal pelo seu índice na lista
