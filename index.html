@@ -541,7 +541,9 @@
       // Se o guia vertical estiver visível, os controles são para ele
       if (isGuideVisible) {
         event.preventDefault(); // Previne o comportamento padrão das teclas
-        if (['ArrowUp', 'Up', 'ChannelUp', 'PageUp'].includes(event.key)) {
+        if (event.key === '0') { // A tecla '0' também fecha o guia
+          hideVerticalGuide();
+        } else if (['ArrowUp', 'Up', 'ChannelUp', 'PageUp'].includes(event.key)) { // Navegação para cima no guia
           guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
           updateGuideSelection();
         } else if (['ArrowDown', 'Down', 'ChannelDown', 'PageDown'].includes(event.key)) {
@@ -554,10 +556,18 @@
           hideVerticalGuide();
         }
         return; // Ignora o resto do listener
-      }
+      } // Fim do bloco if (isGuideVisible)
 
       const isNumericKey = !event.altKey && !event.ctrlKey && event.key >= '0' && event.key <= '9';
-      if (isNumericKey && event.key !== '0') { // Digitação numérica (exceto 0)
+
+      // Lógica para a tecla '0' quando o guia está fechado
+      if (event.key === '0' && channelInputBuffer.length === 0) {
+        event.preventDefault();
+        showVerticalGuide();
+        return; // Impede que o '0' seja adicionado ao buffer de digitação
+      }
+
+      if (isNumericKey) { // Trata a digitação de qualquer número (incluindo '0' se o buffer não estiver vazio)
         // Limpa o timeout anterior se o usuário digitar outro número rapidamente
         clearTimeout(channelInputTimeout);
 
@@ -584,9 +594,6 @@
             }, 700); // Mantém o display vermelho por 0.7 segundos
           }
         }, 1500); // Espera 1.5 segundos antes de mudar
-      } else if (event.key === '0' && !isGuideVisible) {
-        // Abre o guia de canais com a tecla '0', mas só se ele não estiver visível
-        showVerticalGuide();
       } else if (['Enter', 'OK', 'Select'].includes(event.key)) {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
@@ -594,16 +601,14 @@
         event.preventDefault(); // Impede a rolagem da página com as setas
         cancelNumericInput(); // Cancela qualquer digitação de canal pendente
         let nextIndex;
+        // Verifica se a tecla pressionada é para subir o canal
         if (['ArrowUp', 'Up', 'ChannelUp', 'PageUp'].includes(event.key)) { // Seta para cima ou CH+ sobe o canal (crescente)
           // Calcula o índice do próximo canal, voltando ao primeiro se estiver no último
           nextIndex = (currentChannelIndex + 1) % channels.length;
-        } else { // ArrowDown - Seta para baixo desce o canal (decrescente)
+          selectChannelByIndex(nextIndex);
+        } else if (['ArrowDown', 'Down', 'ChannelDown', 'PageDown'].includes(event.key)) { // Seta para baixo ou CH- desce o canal (decrescente)
           // Calcula o índice do canal anterior, indo para o último se estiver no primeiro
           nextIndex = (currentChannelIndex - 1 + channels.length) % channels.length;
-        }
-
-        // Apenas muda de canal se a tecla for para cima ou para baixo
-        if (['ArrowUp', 'Up', 'ArrowDown', 'Down', 'ChannelUp', 'ChannelDown', 'PageUp', 'PageDown'].includes(event.key)) {
           selectChannelByIndex(nextIndex);
         }
       } else if (event.key === ' ' || event.code === 'Space') {
@@ -620,12 +625,9 @@
         }
       } else if (event.key === 'Escape' || event.key === 'Back' || event.key === 'GoBack') {
         // Se a tecla "Voltar" for pressionada e um número estiver sendo digitado, cancela a digitação.
-        if (channelInputBuffer.length > 0) {
-          cancelNumericInput();
-        } else if (isGuideVisible) {
-          // Se o guia estiver visível, a tecla "Voltar" o fecha.
-          hideVerticalGuide();
-        }
+        // A lógica para fechar o guia já é tratada no bloco 'if (isGuideVisible)' no início.
+        // Aqui, a tecla "Voltar" serve apenas para cancelar a entrada numérica.
+        cancelNumericInput();
       } else if (event.key === 'MediaPlayPause' || event.key === 'Play' || event.key === 'Pause') {
         event.preventDefault();
         const videoPlayer = document.querySelector('video#player');
@@ -636,6 +638,11 @@
                 videoPlayer.pause();
             }
         }
+      } else if (['ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue'].includes(event.key)) {
+        // Reconhece as teclas coloridas do controle remoto
+        event.preventDefault();
+        console.log(`Tecla colorida pressionada: ${event.key}`);
+        // Futuramente, você pode adicionar funções aqui, como filtrar canais por categoria.
       } else {
         return; // Ignora outras teclas
       }
