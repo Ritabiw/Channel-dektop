@@ -574,12 +574,12 @@
         return; // Impede que o '0' seja adicionado ao buffer de digitação
       }
 
-      if (isNumericKey) { // Trata a digitação de qualquer número (incluindo '0' se o buffer não estiver vazio)
+      if (isNumericKey) { // Trata a digitação de qualquer número
         // Limpa o timeout anterior se o usuário digitar outro número rapidamente
         clearTimeout(channelInputTimeout);
 
         channelInputBuffer += event.key;
-        channelInputDisplay.textContent = channelInputBuffer;
+        channelInputDisplay.textContent = channelInputBuffer.padStart(2, '_'); // Melhora a exibição
         channelInputDisplay.classList.remove('hidden');
 
         // Define um timeout para mudar de canal após o usuário parar de digitar
@@ -600,7 +600,7 @@
               cancelNumericInput();
             }, 700); // Mantém o display vermelho por 0.7 segundos
           }
-        }, 1500); // Espera 1.5 segundos antes de mudar
+        }, 1200); // Espera 1.2 segundos antes de mudar
       } else if (KEYS_OK.includes(event.key)) {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
@@ -666,8 +666,6 @@
       } else if (event.key === 'Exit') {
         // Em algumas TVs, a tecla Exit pode fechar o aplicativo.
         // window.close(); // Descomente se desejar este comportamento.
-      } else {
-        return; // Ignora outras teclas
       }
     });
 
