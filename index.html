@@ -541,22 +541,22 @@
       // Se o guia vertical estiver visível, os controles são para ele
       if (isGuideVisible) {
         event.preventDefault(); // Previne o comportamento padrão das teclas
-        if (event.key === 'ArrowUp') {
+        if (event.key === 'ArrowUp' || event.key === 'ChannelUp') {
           guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
           updateGuideSelection();
-        } else if (event.key === 'ArrowDown') {
+        } else if (event.key === 'ArrowDown' || event.key === 'ChannelDown') {
           guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
           updateGuideSelection();
         } else if (event.key === 'Enter') {
           selectChannelByIndex(guideSelectedIndex);
           hideVerticalGuide();
-        } else if (event.key === 'Escape' || event.key === '0') {
+        } else if (event.key === 'Escape' || event.key === '0' || event.key === 'Back' || event.key === 'GoBack') { // Tecla Voltar do controle
           hideVerticalGuide();
         }
         return; // Ignora o resto do listener
       }
 
-      const isNumericKey = event.key >= '0' && event.key <= '9';
+      const isNumericKey = !event.altKey && !event.ctrlKey && event.key >= '0' && event.key <= '9';
       if (isNumericKey && event.key !== '0') { // Digitação numérica (exceto 0)
         // Limpa o timeout anterior se o usuário digitar outro número rapidamente
         clearTimeout(channelInputTimeout);
@@ -604,7 +604,7 @@
           // Calcula o índice do canal anterior, indo para o último se estiver no primeiro
           nextIndex = (currentChannelIndex - 1 + channels.length) % channels.length;
         }
-
+        
         // Usa a nova função centralizada para mudar de canal
         selectChannelByIndex(nextIndex);
       } else if (event.key === ' ' || event.code === 'Space') {
@@ -618,6 +618,21 @@
         } else {
           // Se não houver player, recarrega o canal ativo como fallback.
           selectChannelByIndex(currentChannelIndex);
+        }
+      } else if (event.key === 'Escape' || event.key === 'Back' || event.key === 'GoBack') {
+        // Se a tecla "Voltar" for pressionada e um número estiver sendo digitado, cancela a digitação.
+        if (channelInputBuffer.length > 0) {
+          cancelNumericInput();
+        }
+      } else if (event.key === 'MediaPlayPause' || event.key === 'Play' || event.key === 'Pause') {
+        event.preventDefault();
+        const videoPlayer = document.querySelector('video#player');
+        if (videoPlayer) {
+            if (videoPlayer.paused) {
+                videoPlayer.play();
+            } else {
+                videoPlayer.pause();
+            }
         }
       } else {
         return; // Ignora outras teclas
