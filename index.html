@@ -541,13 +541,13 @@
       // Se o guia vertical estiver visível, os controles são para ele
       if (isGuideVisible) {
         event.preventDefault(); // Previne o comportamento padrão das teclas
-        if (event.key === 'ArrowUp' || event.key === 'ChannelUp') {
+        if (event.key === 'ArrowUp' || event.key === 'ChannelUp' || event.key === 'PageUp') {
           guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
           updateGuideSelection();
-        } else if (event.key === 'ArrowDown' || event.key === 'ChannelDown') {
+        } else if (event.key === 'ArrowDown' || event.key === 'ChannelDown' || event.key === 'PageDown') {
           guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
           updateGuideSelection();
-        } else if (event.key === 'Enter') {
+        } else if (event.key === 'Enter' || event.key === 'OK') { // 'OK' é comum em alguns controles
           selectChannelByIndex(guideSelectedIndex);
           hideVerticalGuide();
         } else if (event.key === 'Escape' || event.key === '0' || event.key === 'Back' || event.key === 'GoBack') { // Tecla Voltar do controle
@@ -590,14 +590,14 @@
         } else {
           showVerticalGuide();
         }
-      } else if (event.key === 'Enter') {
+      } else if (event.key === 'Enter' || event.key === 'OK') {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
-      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ChannelUp' || event.key === 'ChannelDown') {
+      } else if (['ArrowUp', 'ArrowDown', 'ChannelUp', 'ChannelDown', 'PageUp', 'PageDown'].includes(event.key)) {
         event.preventDefault(); // Impede a rolagem da página com as setas
         cancelNumericInput(); // Cancela qualquer digitação de canal pendente
         let nextIndex;
-        if (event.key === 'ArrowUp' || event.key === 'ChannelUp') { // Seta para cima ou CH+ sobe o canal (crescente)
+        if (event.key === 'ArrowUp' || event.key === 'ChannelUp' || event.key === 'PageUp') { // Seta para cima ou CH+ sobe o canal (crescente)
           // Calcula o índice do próximo canal, voltando ao primeiro se estiver no último
           nextIndex = (currentChannelIndex + 1) % channels.length;
         } else { // ArrowDown - Seta para baixo desce o canal (decrescente)
