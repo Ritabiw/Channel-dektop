@@ -541,16 +541,16 @@
       // Se o guia vertical estiver visível, os controles são para ele
       if (isGuideVisible) {
         event.preventDefault(); // Previne o comportamento padrão das teclas
-        if (event.key === 'ArrowUp' || event.key === 'ChannelUp' || event.key === 'PageUp') {
+        if (['ArrowUp', 'Up', 'ChannelUp', 'PageUp'].includes(event.key)) {
           guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
           updateGuideSelection();
-        } else if (event.key === 'ArrowDown' || event.key === 'ChannelDown' || event.key === 'PageDown') {
+        } else if (['ArrowDown', 'Down', 'ChannelDown', 'PageDown'].includes(event.key)) {
           guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
           updateGuideSelection();
-        } else if (event.key === 'Enter' || event.key === 'OK') { // 'OK' é comum em alguns controles
+        } else if (['Enter', 'OK', 'Select'].includes(event.key)) { // 'OK' e 'Select' são comuns em controles
           selectChannelByIndex(guideSelectedIndex);
           hideVerticalGuide();
-        } else if (event.key === 'Escape' || event.key === '0' || event.key === 'Back' || event.key === 'GoBack') { // Tecla Voltar do controle
+        } else if (['Escape', 'Back', 'GoBack'].includes(event.key)) { // Tecla Voltar do controle fecha o guia
           hideVerticalGuide();
         }
         return; // Ignora o resto do listener
@@ -583,30 +583,29 @@
               cancelNumericInput();
             }, 700); // Mantém o display vermelho por 0.7 segundos
           }
-        }, 1500); // Espera 1.5 segundos antes de mudar, dando mais tempo ao usuário
-      } else if (event.key === '0') {
-        if (isGuideVisible) {
-          hideVerticalGuide();
-        } else {
-          showVerticalGuide();
-        }
-      } else if (event.key === 'Enter' || event.key === 'OK') {
+        }, 1500); // Espera 1.5 segundos antes de mudar
+      } else if (event.key === '0' && !isGuideVisible) {
+        // Abre o guia de canais com a tecla '0', mas só se ele não estiver visível
+        showVerticalGuide();
+      } else if (['Enter', 'OK', 'Select'].includes(event.key)) {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
-      } else if (['ArrowUp', 'ArrowDown', 'ChannelUp', 'ChannelDown', 'PageUp', 'PageDown'].includes(event.key)) {
+      } else if (['ArrowUp', 'Up', 'ArrowDown', 'Down', 'ChannelUp', 'ChannelDown', 'PageUp', 'PageDown', 'ArrowLeft', 'Left', 'ArrowRight', 'Right'].includes(event.key)) {
         event.preventDefault(); // Impede a rolagem da página com as setas
         cancelNumericInput(); // Cancela qualquer digitação de canal pendente
         let nextIndex;
-        if (event.key === 'ArrowUp' || event.key === 'ChannelUp' || event.key === 'PageUp') { // Seta para cima ou CH+ sobe o canal (crescente)
+        if (['ArrowUp', 'Up', 'ChannelUp', 'PageUp'].includes(event.key)) { // Seta para cima ou CH+ sobe o canal (crescente)
           // Calcula o índice do próximo canal, voltando ao primeiro se estiver no último
           nextIndex = (currentChannelIndex + 1) % channels.length;
         } else { // ArrowDown - Seta para baixo desce o canal (decrescente)
           // Calcula o índice do canal anterior, indo para o último se estiver no primeiro
           nextIndex = (currentChannelIndex - 1 + channels.length) % channels.length;
         }
-        
-        // Usa a nova função centralizada para mudar de canal
-        selectChannelByIndex(nextIndex);
+
+        // Apenas muda de canal se a tecla for para cima ou para baixo
+        if (['ArrowUp', 'Up', 'ArrowDown', 'Down', 'ChannelUp', 'ChannelDown', 'PageUp', 'PageDown'].includes(event.key)) {
+          selectChannelByIndex(nextIndex);
+        }
       } else if (event.key === ' ' || event.code === 'Space') {
         event.preventDefault(); // Impede o comportamento padrão do espaço (rolar a página)
         
@@ -623,6 +622,9 @@
         // Se a tecla "Voltar" for pressionada e um número estiver sendo digitado, cancela a digitação.
         if (channelInputBuffer.length > 0) {
           cancelNumericInput();
+        } else if (isGuideVisible) {
+          // Se o guia estiver visível, a tecla "Voltar" o fecha.
+          hideVerticalGuide();
         }
       } else if (event.key === 'MediaPlayPause' || event.key === 'Play' || event.key === 'Pause') {
         event.preventDefault();
