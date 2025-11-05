@@ -533,6 +533,13 @@
       });
     }
 
+    // Constantes para as teclas do controle remoto, evitando repetição
+    const KEYS_UP = ['ArrowUp', 'Up', 'ChannelUp', 'PageUp'];
+    const KEYS_DOWN = ['ArrowDown', 'Down', 'ChannelDown', 'PageDown'];
+    const KEYS_OK = ['Enter', 'OK', 'Select'];
+    const KEYS_BACK = ['Escape', 'Back', 'GoBack'];
+    const KEYS_COLORED = ['ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue'];
+
     // Adiciona a funcionalidade de mudar de canal com as setas do teclado
     window.addEventListener('keydown', (event) => {
       // LINHA DE DIAGNÓSTICO: Mostra no console qual tecla foi pressionada.
@@ -543,16 +550,16 @@
         event.preventDefault(); // Previne o comportamento padrão das teclas
         if (event.key === '0') { // A tecla '0' também fecha o guia
           hideVerticalGuide();
-        } else if (['ArrowUp', 'Up', 'ChannelUp', 'PageUp'].includes(event.key)) { // Navegação para cima no guia
+        } else if (KEYS_UP.includes(event.key)) { // Navegação para cima no guia
           guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
           updateGuideSelection();
-        } else if (['ArrowDown', 'Down', 'ChannelDown', 'PageDown'].includes(event.key)) {
+        } else if (KEYS_DOWN.includes(event.key)) {
           guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
           updateGuideSelection();
-        } else if (['Enter', 'OK', 'Select'].includes(event.key)) { // 'OK' e 'Select' são comuns em controles
+        } else if (KEYS_OK.includes(event.key)) { // 'OK' e 'Select' são comuns em controles
           selectChannelByIndex(guideSelectedIndex);
           hideVerticalGuide();
-        } else if (['Escape', 'Back', 'GoBack'].includes(event.key)) { // Tecla Voltar do controle fecha o guia
+        } else if (KEYS_BACK.includes(event.key)) { // Tecla Voltar do controle fecha o guia
           hideVerticalGuide();
         }
         return; // Ignora o resto do listener
@@ -594,23 +601,21 @@
             }, 700); // Mantém o display vermelho por 0.7 segundos
           }
         }, 1500); // Espera 1.5 segundos antes de mudar
-      } else if (['Enter', 'OK', 'Select'].includes(event.key)) {
+      } else if (KEYS_OK.includes(event.key)) {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
-      } else if (['ArrowUp', 'Up', 'ArrowDown', 'Down', 'ChannelUp', 'ChannelDown', 'PageUp', 'PageDown', 'ArrowLeft', 'Left', 'ArrowRight', 'Right'].includes(event.key)) {
+      } else if (KEYS_UP.includes(event.key)) {
         event.preventDefault(); // Impede a rolagem da página com as setas
         cancelNumericInput(); // Cancela qualquer digitação de canal pendente
-        let nextIndex;
-        // Verifica se a tecla pressionada é para subir o canal
-        if (['ArrowUp', 'Up', 'ChannelUp', 'PageUp'].includes(event.key)) { // Seta para cima ou CH+ sobe o canal (crescente)
-          // Calcula o índice do próximo canal, voltando ao primeiro se estiver no último
-          nextIndex = (currentChannelIndex + 1) % channels.length;
-          selectChannelByIndex(nextIndex);
-        } else if (['ArrowDown', 'Down', 'ChannelDown', 'PageDown'].includes(event.key)) { // Seta para baixo ou CH- desce o canal (decrescente)
-          // Calcula o índice do canal anterior, indo para o último se estiver no primeiro
-          nextIndex = (currentChannelIndex - 1 + channels.length) % channels.length;
-          selectChannelByIndex(nextIndex);
-        }
+        // Seta para cima ou CH+ sobe o canal (número crescente)
+        const nextIndex = (currentChannelIndex + 1) % channels.length;
+        selectChannelByIndex(nextIndex);
+      } else if (KEYS_DOWN.includes(event.key)) {
+        event.preventDefault();
+        cancelNumericInput();
+        // Seta para baixo ou CH- desce o canal (número decrescente)
+        const nextIndex = (currentChannelIndex - 1 + channels.length) % channels.length;
+        selectChannelByIndex(nextIndex);
       } else if (event.key === ' ' || event.code === 'Space') {
         event.preventDefault(); // Impede o comportamento padrão do espaço (rolar a página)
         
@@ -623,11 +628,11 @@
           // Se não houver player, recarrega o canal ativo como fallback.
           selectChannelByIndex(currentChannelIndex);
         }
-      } else if (event.key === 'Escape' || event.key === 'Back' || event.key === 'GoBack') {
+      } else if (KEYS_BACK.includes(event.key)) {
         // Se a tecla "Voltar" for pressionada e um número estiver sendo digitado, cancela a digitação.
         // A lógica para fechar o guia já é tratada no bloco 'if (isGuideVisible)' no início.
         // Aqui, a tecla "Voltar" serve apenas para cancelar a entrada numérica.
-        cancelNumericInput();
+        if (channelInputBuffer.length > 0) cancelNumericInput();
       } else if (event.key === 'MediaPlayPause' || event.key === 'Play' || event.key === 'Pause') {
         event.preventDefault();
         const videoPlayer = document.querySelector('video#player');
@@ -638,11 +643,29 @@
                 videoPlayer.pause();
             }
         }
-      } else if (['ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue'].includes(event.key)) {
+      } else if (event.key === 'MediaStop' || event.key === 'Stop') {
+        event.preventDefault();
+        const videoPlayer = document.querySelector('video#player');
+        if (videoPlayer) {
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0; // Opcional: volta para o início
+        }
+      } else if (event.key === 'MediaRewind' || event.key === 'Rewind') {
+        event.preventDefault();
+        const videoPlayer = document.querySelector('video#player');
+        if (videoPlayer) videoPlayer.currentTime -= 10; // Volta 10 segundos
+      } else if (event.key === 'MediaFastForward' || event.key === 'FastForward') {
+        event.preventDefault();
+        const videoPlayer = document.querySelector('video#player');
+        if (videoPlayer) videoPlayer.currentTime += 10; // Avança 10 segundos
+      } else if (KEYS_COLORED.includes(event.key)) {
         // Reconhece as teclas coloridas do controle remoto
         event.preventDefault();
         console.log(`Tecla colorida pressionada: ${event.key}`);
         // Futuramente, você pode adicionar funções aqui, como filtrar canais por categoria.
+      } else if (event.key === 'Exit') {
+        // Em algumas TVs, a tecla Exit pode fechar o aplicativo.
+        // window.close(); // Descomente se desejar este comportamento.
       } else {
         return; // Ignora outras teclas
       }
