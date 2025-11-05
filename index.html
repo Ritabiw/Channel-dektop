@@ -12,6 +12,7 @@
       overflow: hidden; /* Esconde barras de rolagem */
       background-color: #000; /* Fundo preto para imersão */
       font-family: system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif; /* Pilha de fontes moderna e profissional */
+      cursor: none; /* Oculta o cursor do mouse para experiência de TV */
     }    
     #playerContainer {
       width: 100%;
@@ -128,8 +129,63 @@
       align-items: center;
       font-size: 24px;
       font-weight: bold;
-      cursor: pointer;
       z-index: 100; /* Fica em cima de tudo */
+    }
+    /* Estilos para o Guia de Canais Vertical */
+    #vertical-guide {
+      position: fixed;
+      right: 0; /* Movido para a direita */
+      top: 0;
+      height: 100%;
+      width: 350px; /* Largura do guia */
+      /* Fundo com gradiente para mais profundidade */
+      background: linear-gradient(to left, rgba(10, 10, 10, 0.95), rgba(20, 20, 20, 0.85));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 30;
+      color: white;
+      overflow-y: auto; /* Permite rolagem se a lista for grande */
+      transform: translateX(100%); /* Ajustado para a direita */
+      transition: transform 0.3s ease-in-out;
+      padding: 20px 0;
+      box-sizing: border-box;
+      border-left: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil para separar do conteúdo */
+    }
+    #vertical-guide.visible {
+      transform: translateX(0);
+    }
+    /* Estilização da barra de rolagem para um visual mais integrado */
+    #vertical-guide::-webkit-scrollbar {
+      width: 8px;
+    }
+    #vertical-guide::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    #vertical-guide::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+    #vertical-guide::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+    .guide-item {
+      padding: 12px 25px;
+      font-size: 1.5em;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background-color 0.2s ease; /* Transição suave para o estado ativo/hover */
+    }
+    .guide-item.active {
+      /* Destaque azul mais refinado com borda */
+      background-color: rgba(0, 123, 255, 0.2);
+      font-weight: bold;
+      border-left: 4px solid #007bff;
+      padding-left: 21px; /* Compensa a borda para manter o alinhamento do texto */
+    }
+    .guide-item .number {
+      font-weight: bold;
+      margin-right: 15px;
     }
   </style>
   <!-- Adiciona a biblioteca hls.js para suporte a HLS -->
@@ -138,6 +194,8 @@
 <body>
   <div id="welcome-overlay">Clique para iniciar e ativar o som</div>
 
+  <!-- Guia de canais vertical -->
+  <div id="vertical-guide"></div>
   <div id="static-overlay"></div>
   <div id="channel-info-display"></div>
   <div id="program-guide">
@@ -165,6 +223,10 @@
     // Variável para o timeout do display de informação do canal
     let channelInfoTimeout = null;
     let programGuideTimeout = null;
+    // Variáveis para o guia vertical
+    let isGuideVisible = false;
+    let guideSelectedIndex = 0;
+
 
     // Estrutura de dados para os canais
     const channels = [
@@ -397,6 +459,21 @@
         }
     }
 
+    // Cria e popula o guia de canais vertical
+    function createVerticalGuide() {
+      const guideContainer = document.getElementById('vertical-guide');
+      channels.forEach((channel, index) => {
+        const item = document.createElement('div');
+        item.className = 'guide-item';
+        item.dataset.index = index; // Armazena o índice para fácil acesso
+        item.innerHTML = `<span class="number">${index + 1}</span> <span class="name">${channel.name}</span>`;
+        item.addEventListener('click', () => { // Permite seleção por clique (para depuração/uso em desktop)
+          selectChannelByIndex(index);
+          hideVerticalGuide();
+        });
+        guideContainer.appendChild(item);
+      });
+    }
     // Carrega o canal inicial quando a página é aberta
     document.addEventListener('DOMContentLoaded', () => {
       const welcomeOverlay = document.getElementById('welcome-overlay');
@@ -410,6 +487,9 @@
 
         requestFullscreenFromUserAction(); // Opcional: tenta entrar em tela cheia
       }, { once: true }); // O evento só vai disparar uma vez
+
+      // Popula o guia vertical ao carregar a página
+      createVerticalGuide();
     });
 
     // Lógica para mostrar/esconder a barra de canais
@@ -426,14 +506,58 @@
       channelInputDisplay.classList.add('hidden');
     }
 
+    function showVerticalGuide() {
+      const guide = document.getElementById('vertical-guide');
+      isGuideVisible = true;
+      guideSelectedIndex = currentChannelIndex; // Começa no canal atual
+      updateGuideSelection();
+      guide.classList.add('visible');
+    }
+
+    function hideVerticalGuide() {
+      const guide = document.getElementById('vertical-guide');
+      isGuideVisible = false;
+      guide.classList.remove('visible');
+    }
+
+    function updateGuideSelection() {
+      const items = document.querySelectorAll('.guide-item');
+      items.forEach((item, index) => {
+        if (index === guideSelectedIndex) {
+          item.classList.add('active');
+          // Garante que o item ativo esteja visível na tela
+          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
     // Adiciona a funcionalidade de mudar de canal com as setas do teclado
     window.addEventListener('keydown', (event) => {
       // LINHA DE DIAGNÓSTICO: Mostra no console qual tecla foi pressionada.
       console.log('Tecla pressionada:', event.key);
 
+      // Se o guia vertical estiver visível, os controles são para ele
+      if (isGuideVisible) {
+        event.preventDefault(); // Previne o comportamento padrão das teclas
+        if (event.key === 'ArrowUp') {
+          guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
+          updateGuideSelection();
+        } else if (event.key === 'ArrowDown') {
+          guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
+          updateGuideSelection();
+        } else if (event.key === 'Enter') {
+          selectChannelByIndex(guideSelectedIndex);
+          hideVerticalGuide();
+        } else if (event.key === 'Escape' || event.key === '0') {
+          hideVerticalGuide();
+        }
+        return; // Ignora o resto do listener
+      }
+
       const isNumericKey = event.key >= '0' && event.key <= '9';
-      
-      if (isNumericKey) {
+      if (isNumericKey && event.key !== '0') { // Digitação numérica (exceto 0)
         // Limpa o timeout anterior se o usuário digitar outro número rapidamente
         clearTimeout(channelInputTimeout);
 
@@ -459,7 +583,13 @@
               cancelNumericInput();
             }, 700); // Mantém o display vermelho por 0.7 segundos
           }
-        }, 500); // Espera 0.5 segundos antes de mudar (ajustado para melhor responsividade)
+        }, 1500); // Espera 1.5 segundos antes de mudar, dando mais tempo ao usuário
+      } else if (event.key === '0') {
+        if (isGuideVisible) {
+          hideVerticalGuide();
+        } else {
+          showVerticalGuide();
+        }
       } else if (event.key === 'Enter') {
         // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
@@ -506,4 +636,3 @@
     });
   </script>
 </html>
-
