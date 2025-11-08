@@ -229,6 +229,11 @@
     let programGuideTimeout = null;
     // Variáveis para o guia vertical
     let isGuideVisible = false;
+    // Variáveis para o detector de travamento
+    let stallDetector = null;
+    let lastTime = 0;
+    let stallRetryCount = 0; // Contador para tentativas de recuperação
+    let availableQualities = []; // Armazena as qualidades disponíveis para o HLS
     let guideSelectedIndex = 0;
 
 
@@ -356,23 +361,59 @@
         video.muted = !userHasInteracted;
         video.controls = false; // Esconde os controles nativos do vídeo
 
+        // Configurações otimizadas para hls.js para maior resiliência
+        const hlsConfig = {
+          // Aumenta o tempo máximo de buffer para ajudar em conexões instáveis
+          maxMaxBufferLength: 60,
+          // Configurações de retry para falhas de fragmento
+          fragLoadingMaxRetry: 4,
+          fragLoadingMaxRetryTimeout: 20000, // 20 segundos
+          // Configurações de retry para falhas de playlist
+          manifestLoadingMaxRetry: 4,
+          manifestLoadingMaxRetryTimeout: 20000,
+          // Inicia na qualidade mais baixa para garantir um início rápido
+          startLevel: 0,
+        };
+
         if (Hls.isSupported()) {
-          hls = new Hls();
+          hls = new Hls(hlsConfig);
           // Adiciona um listener para erros de mídia ou rede
           hls.on(Hls.Events.ERROR, function (event, data) {
             if (data.fatal) {
               console.error('Erro fatal no HLS.js:', data);
-              // Tenta se recuperar de um erro de mídia destruindo e recriando o HLS
-              if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-                console.log('Tentando se recuperar de um erro de mídia...');
-                hls.recoverMediaError();
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  // Tenta se recuperar de erros de rede reiniciando o carregamento
+                  console.log('Erro de rede detectado, tentando reiniciar o carregamento...');
+                  hls.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  // Tenta se recuperar de erros de mídia
+                  console.log('Erro de mídia detectado, tentando recuperar...');
+                  hls.recoverMediaError();
+                  break;
+                default:
+                  // Se for um erro irrecuperável, recria o player
+                  console.log('Erro fatal irrecuperável, recarregando o canal...');
+                  changeChannel(channels[currentChannelIndex], true);
+                  break;
               }
             }
           });
+          // Ouve o evento que informa quando as qualidades estão disponíveis
+          hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+            console.log(`Manifesto parseado. Níveis de qualidade encontrados: ${data.levels.length}`);
+            availableQualities = data.levels;
+            // Se houver mais de uma qualidade, o modo automático (ABR) é ativado por padrão.
+            // hls.currentLevel = -1; // -1 para modo automático
+          });
+
           hls.loadSource(url);
           hls.attachMedia(video);
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           // Suporte nativo em navegadores como Safari
+          // Adiciona um listener de erro para o player nativo também
+          video.addEventListener('error', () => handleVideoError(video));
           video.src = url;
         }
         return video;
@@ -397,6 +438,13 @@
           });
           mpegtsPlayer.attachMediaElement(video);
           mpegtsPlayer.load();
+          
+          // Adiciona tratamento de erro para o mpegts.js
+          mpegtsPlayer.on(mpegts.Events.ERROR, (error) => {
+            console.error('Erro no mpegts.js:', error);
+            // Tenta recarregar o canal em caso de erro
+            changeChannel(channels[currentChannelIndex], true);
+          });
         } else {
           console.error('Seu navegador não suporta mpegts.js (Media Source Extensions).');
         }
@@ -415,10 +463,78 @@
       return player;
     }
 
+    // Inicia o detector de travamento (stall) para o player de vídeo
+    function startStallDetector(video) {
+      // Limpa qualquer detector anterior
+      if (stallDetector) {
+        clearInterval(stallDetector);
+      }
+      lastTime = video.currentTime; // Inicia com o tempo atual
+      stallRetryCount = 0; // Reseta o contador de tentativas
+      availableQualities = []; // Limpa as qualidades do canal anterior
+
+      stallDetector = setInterval(() => {
+        if (video.paused || video.seeking || video.ended) {
+          // Se o vídeo estiver pausado ou buscando, não faz nada e reseta o tempo
+          lastTime = video.currentTime;
+          return;
+        }
+
+        // Compara o tempo atual com o tempo da última verificação
+        if (Math.abs(video.currentTime - lastTime) < 0.5) { // Aumenta a tolerância ligeiramente
+          // O tempo não mudou, o vídeo provavelmente travou.
+          stallRetryCount++;
+          console.warn(`Detector de travamento: Vídeo congelado. Tentativa de recuperação #${stallRetryCount}.`);
+          
+          // Tenta reduzir a qualidade primeiro, se houver HLS e qualidades disponíveis
+          if (hls && availableQualities.length > 1 && hls.currentLevel > 0) {
+            console.log(`Tentando reduzir a qualidade. Nível atual: ${hls.currentLevel}. Trocando para ${hls.currentLevel - 1}`);
+            // Força a troca para o próximo nível mais baixo
+            hls.currentLevel = hls.currentLevel - 1;
+            stallRetryCount = 0; // Reseta o contador, pois tomamos uma ação
+          } else if (stallRetryCount < 2) {
+            // Se não for possível reduzir a qualidade, tenta a recuperação leve
+            console.log('Não é possível reduzir a qualidade. Tentando recuperação leve do HLS...');
+            if (hls) hls.startLoad();
+          } else {
+            // Se nada funcionou, parte para a recuperação completa
+            console.error('Recuperação leve falhou. Iniciando recarregamento completo do canal.');
+            clearInterval(stallDetector); // Para de verificar para não causar loops
+            changeChannel(channels[currentChannelIndex], true);
+          }
+        }
+        lastTime = video.currentTime;
+      }, 4000); // Verifica a cada 4 segundos
+    }
+
+    // Função auxiliar para tratar erros no elemento de vídeo
+    function handleVideoError(videoElement) {
+      // Verifica se já estamos tratando um erro para este elemento para evitar chamadas múltiplas
+      if (videoElement.dataset.reloading === 'true') return;
+      videoElement.dataset.reloading = 'true';
+
+      console.error("Erro no elemento de vídeo. Tentando recarregar o canal...");
+      
+      // Remove o listener de erro para não ser acionado novamente durante a recarga
+      videoElement.removeEventListener('error', handleVideoError);
+      changeChannel(channels[currentChannelIndex], true); // Tenta recarregar o canal atual
+    }
     function changeChannel(channel, isRetry = false) {
       const playerContainer = document.getElementById('playerContainer');
       const oldPlayer = document.getElementById('player');
       const staticOverlay = document.getElementById('static-overlay');
+
+      // CORREÇÃO CRÍTICA: Limpa o estado de 'reloading' do player antigo.
+      // Isso previne que a recuperação falhe se um erro ocorrer durante a recarga.
+      if (oldPlayer) {
+        delete oldPlayer.dataset.reloading;
+      }
+      // Para qualquer detector de travamento que esteja rodando
+      if (stallDetector) {
+        clearInterval(stallDetector);
+        stallDetector = null;
+        availableQualities = [];
+      }
 
       // Mostra o efeito de estática
       staticOverlay.style.display = 'block';
@@ -427,26 +543,35 @@
         showProgramGuide(channel);
       }
 
-      // Se houver uma instância do hls.js, destrua-a para liberar recursos.
+      // Remove o player antigo do DOM de forma segura ANTES de destruir as instâncias.
+      // Isso ajuda o navegador a liberar recursos mais rapidamente.
+      if (oldPlayer) {
+        // Limpeza explícita de listeners para evitar memory leaks
+        if (oldPlayer.tagName === 'VIDEO') {
+          oldPlayer.removeEventListener('error', handleVideoError);
+        }
+        oldPlayer.pause(); // Garante que a reprodução pare
+        oldPlayer.src = ''; // Libera a fonte do vídeo/iframe
+        oldPlayer.remove();
+      }
+
+      // Garante a destruição completa dos players anteriores
       if (hls) {
+        hls.stopLoad();
         hls.destroy();
         hls = null;
       }
-
-      // Se houver uma instância do mpegts.js, destrua-a.
       if (mpegtsPlayer) {
+        mpegtsPlayer.unload();
+        mpegtsPlayer.detachMediaElement();
         mpegtsPlayer.destroy();
         mpegtsPlayer = null;
-      }
-
-      if (oldPlayer) {
-        playerContainer.removeChild(oldPlayer);
       }
 
       if (!channel || !channel.url) return; // Não faz nada se a URL for inválida
 
       // Adiciona um pequeno atraso para o efeito de estática ser visível
-      setTimeout(() => {
+      const loadTimeout = setTimeout(() => {
         // 1. Cria o novo player
         const newPlayer = createPlayer(channel.url);
         // 2. Adiciona o novo player ao container
@@ -460,15 +585,8 @@
               // Autoplay com som iniciado com sucesso!
               newPlayer.muted = false;
               staticOverlay.style.display = 'none';
-              // Adiciona um listener de erro para tentar recarregar o canal
-              newPlayer.addEventListener('error', () => {
-                console.error("Erro no elemento de vídeo. Tentando recarregar o canal...");
-                // Evita loops infinitos de recarregamento
-                if (!newPlayer.dataset.reloading) {
-                  newPlayer.dataset.reloading = 'true';
-                  changeChannel(channel, true); // Tenta recarregar
-                }
-              });
+              newPlayer.addEventListener('error', () => handleVideoError(newPlayer), { once: true });
+              startStallDetector(newPlayer); // Inicia o detector de travamento
             }).catch(error => {
               // Autoplay foi bloqueado pelo navegador.
               console.error("Autoplay bloqueado:", error);
@@ -480,7 +598,7 @@
           // Para iframes, apenas escondemos a estática após um tempo.
           staticOverlay.style.display = 'none';
         }
-      }, 50); // Reduzi o atraso para uma troca de canal mais ágil
+      }, isRetry ? 500 : 50); // Atraso menor na tentativa de recarga, mais rápido na troca normal
     }
 
     // Nova função centralizada para selecionar um canal pelo seu índice na lista
