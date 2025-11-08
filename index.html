@@ -267,7 +267,7 @@
       { name: "Telecine Premium", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9134" },
       { name: "Telecine Action", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9127" },
       { name: "Telecine Pipoca", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9132" },
-      { name: "Telecine Fun", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/30139" },
+      { name: "Telecine Fun", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/24535" },
       { name: "Telecine Touch", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9136" },
       { name: "Telecine Cult", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9128" },
       { name: "HBO", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8903" },
@@ -845,7 +845,18 @@
         }
       }, 0);
     });
+
+    // Registra o Service Worker para cache e performance
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso! Escopo:', registration.scope);
+          })
+          .catch(error => {
+            console.error('Falha ao registrar o Service Worker:', error);
+          });
+      });
+    }
   </script>
 </html>
-
-
