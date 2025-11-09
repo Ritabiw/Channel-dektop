@@ -278,12 +278,12 @@
       { name: "Sony Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/21229.m3u8" },
       { name: "Universal TV", url: "http://granpirosh.top/live/841866657/c581b7318b/743.m3u8" },
       { name: "AXN", url: "http://granpirosh.top/live/841866657/c581b7318b/676.m3u8" },
-      { name: "TNT", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/fcc63cd6c510a65effe68820e75cb75f/tnt.m3u8" },
+      { name: "TNT", url: "http://granpirosh.top/live/841866657/c581b7318b/620.m3u8" },
       { name: "TNT Séries", url: "http://granpirosh.top/live/841866657/c581b7318b/738.m3u8" },
       { name: "TNT Novelas", url: "http://granpirosh.top/live/841866657/c581b7318b/264555.m3u8" },
       { name: "Space", url: "http://granpirosh.top/live/841866657/c581b7318b/707.m3u8" },
       { name: "Paramount Network", url: "http://granpirosh.top/live/841866657/c581b7318b/697.m3u8" },
-      { name: "FX", url: "https://embedcanais.com/fx/" },
+      { name: "FX", url: "http://lunar.pm:8080/ALVIN/9gJbtWskzsJS/120634" },
       { name: "AMC", url: "https://embedcanais.com/amc/" },
       { name: "Studio Universal", url: "http://granpirosh.top/live/841866657/c581b7318b/713.m3u8" },
       { name: "A&E", url: "http://granpirosh.top/live/841866657/c581b7318b/666.m3u8" },
@@ -301,7 +301,7 @@
       { name: "Curta!", url: "https://embedcanais.com/curta/" },
       // Infantil
       { name: "Cartoon Network", url: "http://granpirosh.top/live/841866657/c581b7318b/352.m3u8" },
-      { name: "Disney Channel", url: "" },
+      { name: "Cartoonito", url: "http://granpirosh.top/live/841866657/c581b7318b/271604.m3u8 "},
       { name: "Boomerang", url: "https://embedcanais.com/boomerang/" },
       { name: "Nickelodeon", url: "http://granpirosh.top/live/841866657/c581b7318b/372.m3u8" },
       { name: "Nick Jr.", url: "http://granpirosh.top/live/841866657/c581b7318b/368.m3u8" },
@@ -355,6 +355,7 @@
         const video = document.createElement('video');
         video.id = 'player';
         video.style.width = '100%';
+        video.classList.add('no-pointer-events'); // Desativa cliques no vídeo
         video.style.height = '100%';
         video.autoplay = true;
         // Só inicia mudo se for a primeira interação. Depois, tenta iniciar com som.
@@ -389,6 +390,7 @@
         const video = document.createElement('video');
         video.id = 'player';
         video.style.width = '100%';
+        video.classList.add('no-pointer-events'); // Desativa cliques no vídeo
         video.style.height = '100%';
         video.autoplay = true;
         video.muted = !userHasInteracted;
@@ -415,8 +417,9 @@
       autoPlayUrl.searchParams.set('autoplay', '1');
       autoPlayUrl.searchParams.set('autostart', 'true');
       player.src = autoPlayUrl.toString();
-      player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      player.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
       player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation');
+      player.setAttribute('allowfullscreen', ''); // Adiciona permissão para tela cheia
       return player;
     }
 
