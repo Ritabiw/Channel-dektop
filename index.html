@@ -194,6 +194,17 @@
   <script src="https://cdn.jsdelivr.net/npm/mpegts.js/dist/mpegts.min.js"></script>
 </head>
 <body>
+  <script>
+    // Força uma única atualização da página por sessão para limpar o cache e a memória.
+    // Isso ajuda a garantir que o player inicie em um estado otimizado.
+    (function() {
+      if (sessionStorage.getItem('refreshed') !== 'true') {
+        sessionStorage.setItem('refreshed', 'true');
+        location.reload();
+      }
+    })();
+  </script>
+
   <div id="welcome-overlay">Clique para iniciar e ativar o som</div>
 
   <!-- Guia de canais vertical -->
@@ -234,21 +245,22 @@
 
     // Estrutura de dados para os canais
     const channels = [
-      { name: "Globo", url: "http://granpirosh.top/live/841866657/c581b7318b/289881.m3u8" },
-      { name: "Record", url: "http://granpirosh.top/live/841866657/c581b7318b/244071.m3u8" },
+      { name: "INTER TV CABUGI", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/40950" },
+      { name: "Globoplay Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9215" },
       { name: "SBT", url: "http://granpirosh.top/live/841866657/c581b7318b/244161.m3u8" },
       { name: "Record", url: "http://granpirosh.top/live/841866657/c581b7318b/244071.m3u8" },
       { name: "Band", url: "http://granpirosh.top/live/841866657/c581b7318b/255465.m3u8" },
-      { name: "RedeTV!", url: "http://granpirosh.top/live/841866657/c581b7318b/80170.m3u8" },
-      { name: "TV Cultura", url: "http://granpirosh.top/live/841866657/c581b7318b/364662.m3u8" },
+      { name: "RedeTV!", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9074" },
+      { name: "TV Cultura", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/21022" },
       { name: "Futura", url: "http://granpirosh.top/live/841866657/c581b7318b/159.m3u8" },
       { name: "TV Brasil", url: "http://granpirosh.top/live/841866657/c581b7318b/364678.m3u8" },
       { name: "Rede Vida", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9076" },
       { name: "Canção Nova", url: "http://granpirosh.top/live/841866657/c581b7318b/240806.m3u8" },
       { name: "TV Aparecida", url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8?PEDROJUNIORTUTORIAIS" },
-      { name: "GNT", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/52925853b7bdb3373184029fcd6e0f78/gnt.m3u8" },
-      { name: "Globoplay Novelas", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/38380a62107139581f856d34fe695cb3/viva.m3u8" },
-      { name: "GloboNews", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/318c24d556d8144103ee6e6ba6e7fcf5/globonews.m3u8" },
+      { name: "TV Evangelizar", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/69257" },
+      { name: "GNT", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/107984" },
+      { name: "Globoplay Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9215" },
+      { name: "GloboNews", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81598" },
       { name: "CNN Brasil", url: "https://video01.soultv.com.br/cnnbrasil/cnnbrasil/playlist.m3u8" },
       { name: "Record News", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9058" },
       { name: "BandNews TV", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81596" },
@@ -278,13 +290,12 @@
       { name: "Sony Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/21229.m3u8" },
       { name: "Universal TV", url: "http://granpirosh.top/live/841866657/c581b7318b/743.m3u8" },
       { name: "AXN", url: "http://granpirosh.top/live/841866657/c581b7318b/676.m3u8" },
-      { name: "TNT", url: "http://granpirosh.top/live/841866657/c581b7318b/620.m3u8" },
-      { name: "TNT Séries", url: "http://granpirosh.top/live/841866657/c581b7318b/738.m3u8" },
-      { name: "TNT Novelas", url: "http://granpirosh.top/live/841866657/c581b7318b/264555.m3u8" },
+      { name: "TNT", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/594019" },
+      { name: "TNT Séries", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/108184" },
+      { name: "TNT Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/275104" },
       { name: "Space", url: "http://granpirosh.top/live/841866657/c581b7318b/707.m3u8" },
       { name: "Paramount Network", url: "http://granpirosh.top/live/841866657/c581b7318b/697.m3u8" },
-      { name: "FX", url: "http://lunar.pm:8080/ALVIN/9gJbtWskzsJS/120634" },
-      { name: "AMC", url: "https://embedcanais.com/amc/" },
+      { name: "AMC", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81601" },
       { name: "Studio Universal", url: "http://granpirosh.top/live/841866657/c581b7318b/713.m3u8" },
       { name: "A&E", url: "http://granpirosh.top/live/841866657/c581b7318b/666.m3u8" },
       // Documentários
@@ -293,23 +304,18 @@
       { name: "Discovery Science", url: "http://granpirosh.top/live/841866657/c581b7318b/2582.m3u8" },
       { name: "Discovery Theatre", url: "http://granpirosh.top/live/841866657/c581b7318b/2587.m3u8" },
       { name: "Discovery Turbo", url: "http://granpirosh.top/live/841866657/c581b7318b/2592.m3u8" },
-      { name: "Animal Planet", url: "http://granpirosh.top/live/841866657/c581b7318b/2602.m3u8" },
-      { name: "Off", url: "https://dm4-usa-cloud-stream-user40028922.s27-usa-cloudfront-net.online/token/55f18e9a453685fd88baa0a6af6a4eb7/off.m3u8" },
-      { name: "National Geographic", url: "https://embedcanais.com/nationalgeographic/" },
+      { name: "Animal Planet", url: "http://granpirosh.top/live/841866657/c581b7318b/2602.m3u8" },,
       { name: "History Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/2617.m3u8" },
       { name: "History 2", url: "http://granpirosh.top/live/841866657/c581b7318b/2622.m3u8" },
-      { name: "Curta!", url: "https://embedcanais.com/curta/" },
       // Infantil
       { name: "Cartoon Network", url: "http://granpirosh.top/live/841866657/c581b7318b/352.m3u8" },
-      { name: "Cartoonito", url: "http://granpirosh.top/live/841866657/c581b7318b/271604.m3u8 "},
-      { name: "Boomerang", url: "https://embedcanais.com/boomerang/" },
+      { name: "Cartoonito", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8687" },
       { name: "Nickelodeon", url: "http://granpirosh.top/live/841866657/c581b7318b/372.m3u8" },
       { name: "Nick Jr.", url: "http://granpirosh.top/live/841866657/c581b7318b/368.m3u8" },
       { name: "Discovery Kids", url: "http://granpirosh.top/live/841866657/c581b7318b/364.m3u8" },
-      { name: "Disney Junior", url: "https://embedcanais.com/disneyjunior/" },
       { name: "Gloob", url: "http://granpirosh.top/live/841866657/c581b7318b/377227.m3u8" },
       { name: "Gloobinho", url: "http://granpirosh.top/live/841866657/c581b7318b/377232.m3u8" },
-      { name: "Tooncast", url: "https://embedcanais.com/tooncast/" },
+      { name: "Tooncast", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/131167" },
       // Esportes
       { name: "Combate", url: "http://granpirosh.top/live/841866657/c581b7318b/240.m3u8" },
       { name: "SporTV", url: "http://granpirosh.top/live/841866657/c581b7318b/118881.m3u8" },
@@ -355,7 +361,6 @@
         const video = document.createElement('video');
         video.id = 'player';
         video.style.width = '100%';
-        video.classList.add('no-pointer-events'); // Desativa cliques no vídeo
         video.style.height = '100%';
         video.autoplay = true;
         // Só inicia mudo se for a primeira interação. Depois, tenta iniciar com som.
@@ -390,7 +395,6 @@
         const video = document.createElement('video');
         video.id = 'player';
         video.style.width = '100%';
-        video.classList.add('no-pointer-events'); // Desativa cliques no vídeo
         video.style.height = '100%';
         video.autoplay = true;
         video.muted = !userHasInteracted;
@@ -417,9 +421,8 @@
       autoPlayUrl.searchParams.set('autoplay', '1');
       autoPlayUrl.searchParams.set('autostart', 'true');
       player.src = autoPlayUrl.toString();
-      player.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
+      player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
       player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation');
-      player.setAttribute('allowfullscreen', ''); // Adiciona permissão para tela cheia
       return player;
     }
 
@@ -435,19 +438,31 @@
         showProgramGuide(channel);
       }
 
-      // Se houver uma instância do hls.js, destrua-a para liberar recursos.
-      if (hls) {
-        hls.destroy();
-        hls = null;
-      }
-
-      // Se houver uma instância do mpegts.js, destrua-a.
-      if (mpegtsPlayer) {
-        mpegtsPlayer.destroy();
-        mpegtsPlayer = null;
-      }
-
+      // Limpeza completa do player antigo para evitar vazamentos de memória
       if (oldPlayer) {
+        // Para players de vídeo (<video>)
+        if (oldPlayer.tagName === 'VIDEO') {
+          // 1. Pausa o vídeo
+          oldPlayer.pause();
+          // 2. Desanexa as bibliotecas de streaming
+          if (hls) {
+            hls.detachMedia();
+            hls.destroy();
+            hls = null;
+          }
+          if (mpegtsPlayer) {
+            mpegtsPlayer.detachMediaElement();
+            mpegtsPlayer.destroy();
+            mpegtsPlayer = null;
+          }
+          // 3. Limpa a fonte e remove listeners para liberar recursos
+          oldPlayer.src = '';
+          oldPlayer.removeAttribute('src'); // Garante a remoção
+          // Cria um clone sem listeners para substituir o original, limpando todos os eventos.
+          const newEl = oldPlayer.cloneNode(true);
+          oldPlayer.parentNode.replaceChild(newEl, oldPlayer);
+        }
+        // 4. Finalmente, remove o elemento da DOM
         playerContainer.removeChild(oldPlayer);
       }
 
