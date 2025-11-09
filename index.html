@@ -458,15 +458,14 @@
           // 3. Limpa a fonte e remove listeners para liberar recursos
           oldPlayer.src = '';
           oldPlayer.removeAttribute('src'); // Garante a remoção
-          // Cria um clone sem listeners para substituir o original, limpando todos os eventos.
-          const newEl = oldPlayer.cloneNode(true);
-          oldPlayer.parentNode.replaceChild(newEl, oldPlayer);
+          oldPlayer.load(); // Pede ao elemento para não carregar mais a mídia antiga
         }
-        // 4. Finalmente, remove o elemento da DOM
-        playerContainer.removeChild(oldPlayer);
+        // 4. Finalmente, remove o elemento antigo da DOM de forma segura
+        oldPlayer.remove();
       }
 
-      if (!channel || !channel.url) return; // Não faz nada se a URL for inválida
+      // Se o canal for inválido, esconde a estática e para a execução
+      if (!channel || !channel.url) { staticOverlay.style.display = 'none'; return; }
 
       // Adiciona um pequeno atraso para o efeito de estática ser visível
       setTimeout(() => {
