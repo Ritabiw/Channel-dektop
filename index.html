@@ -624,10 +624,10 @@
         event.preventDefault(); // Previne o comportamento padrão das teclas
         if (event.key === '0') { // A tecla '0' também fecha o guia
           hideVerticalGuide();
-        } else if (KEYS_UP.includes(event.key)) { // Navegação para cima no guia
+        } else if (KEYS_UP.includes(event.key) || event.key === 'ColorF1Green') { // Navegação para cima no guia (seta ou VERDE)
           guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
           updateGuideSelection();
-        } else if (KEYS_DOWN.includes(event.key)) {
+        } else if (KEYS_DOWN.includes(event.key) || event.key === 'ColorF0Red') { // Navegação para baixo no guia (seta ou VERMELHO)
           guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
           updateGuideSelection();
         } else if (KEYS_OK.includes(event.key)) { // 'OK' e 'Select' são comuns em controles
