@@ -194,6 +194,17 @@
   <script src="https://cdn.jsdelivr.net/npm/mpegts.js/dist/mpegts.min.js"></script>
 </head>
 <body>
+  <script>
+    // Força uma única atualização da página por sessão para limpar o cache e a memória.
+    // Isso ajuda a garantir que o player inicie em um estado otimizado.
+    (function() {
+      if (sessionStorage.getItem('refreshed') !== 'true') {
+        sessionStorage.setItem('refreshed', 'true');
+        location.reload();
+      }
+    })();
+  </script>
+
   <div id="welcome-overlay">Clique para iniciar e ativar o som</div>
 
   <!-- Guia de canais vertical -->
@@ -229,48 +240,43 @@
     let programGuideTimeout = null;
     // Variáveis para o guia vertical
     let isGuideVisible = false;
-    // Variáveis para o detector de travamento
-    let stallDetector = null;
-    let lastTime = 0;
-    let stallRetryCount = 0; // Contador para tentativas de recuperação
-    let availableQualities = []; // Armazena as qualidades disponíveis para o HLS
     let guideSelectedIndex = 0;
 
 
     // Estrutura de dados para os canais
     const channels = [
-      { name: "INTER TV CABUGI", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/210322" },
-      { name: "Globoplay Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/13496" },
-      { name: "SBT", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/26722" },
-      { name: "Record", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/225833" },
-      { name: "Band", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/107926" },
+      { name: "GLOBO SP", url: "http://granpirosh.top/live/841866657/c581b7318b/289881.m3u8" },
+      { name: "Globoplay Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9215" },
+      { name: "SBT", url: "http://granpirosh.top/live/841866657/c581b7318b/244161.m3u8" },
+      { name: "Record", url: "http://granpirosh.top/live/841866657/c581b7318b/244071.m3u8" },
+      { name: "Band", url: "http://granpirosh.top/live/841866657/c581b7318b/255465.m3u8" },
       { name: "RedeTV!", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9074" },
       { name: "TV Cultura", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/21022" },
       { name: "Futura", url: "http://granpirosh.top/live/841866657/c581b7318b/159.m3u8" },
-      { name: "TV Brasil", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/43030" },
+      { name: "TV Brasil", url: "http://granpirosh.top/live/841866657/c581b7318b/364678.m3u8" },
       { name: "Rede Vida", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9076" },
-      { name: "Canção Nova", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/117823" },
+      { name: "Canção Nova", url: "http://granpirosh.top/live/841866657/c581b7318b/240806.m3u8" },
       { name: "TV Aparecida", url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8?PEDROJUNIORTUTORIAIS" },
       { name: "TV Evangelizar", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/69257" },
       { name: "GNT", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/107984" },
-      { name: "Globoplay NovelasHD", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9215" },
+      { name: "Globoplay Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9215" },
       { name: "GloboNews", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81598" },
       { name: "CNN Brasil", url: "https://video01.soultv.com.br/cnnbrasil/cnnbrasil/playlist.m3u8" },
       { name: "Record News", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9058" },
       { name: "BandNews TV", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81596" },
       { name: "Multishow", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8975" },
       { name: "MTV", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8970" },
-      { name: "Canal Brasil", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/107979" },
-      { name: "Comedy Central", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81602" },
+      { name: "Canal Brasil", url: "http://granpirosh.top/live/841866657/c581b7318b/146.m3u8" },
+      { name: "Comedy Central", url: "http://granpirosh.top/live/841866657/c581b7318b/687.m3u8" },
       { name: "TLC", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/91400" },
       // Filmes e Séries
-      { name: "Telecine Premium", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9134" },
-      { name: "Telecine Action", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9127" },
-      { name: "Telecine Pipoca", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9132" },
-      { name: "Telecine Fun", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/24535" },
-      { name: "Telecine Touch", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9136" },
-      { name: "Telecine Cult", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9128" },
-      { name: "HBO", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8903" },
+      { name: "Telecine Premium", url: "http://granpirosh.top/live/841866657/c581b7318b/635.m3u8" },
+      { name: "Telecine Action", url: "http://granpirosh.top/live/841866657/c581b7318b/615.m3u8" },
+      { name: "Telecine Pipoca", url: "http://granpirosh.top/live/841866657/c581b7318b/630.m3u8" },
+      { name: "Telecine Fun", url: "http://granpirosh.top/live/841866657/c581b7318b/625.m3u8" },
+      { name: "Telecine Touch", url: "http://granpirosh.top/live/841866657/c581b7318b/589.m3u8" },
+      { name: "Telecine Cult", url: "http://granpirosh.top/live/841866657/c581b7318b/620.m3u8" },
+      { name: "HBO", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/31863" },
       { name: "HBO2", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94382" },
       { name: "HBO Family", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94383" },
       { name: "HBO Plus", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94385" },
@@ -278,58 +284,58 @@
       { name: "HBO Pop", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94386" },
       { name: "HBO Xtreme", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/13535" },
       { name: "HBO Mundi", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94384" },
-      { name: "Megapix", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8962" },
-      { name: "Cinemax", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8709" },
-      { name: "Warner Channel", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9220" },
-      { name: "Sony Channel", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9099" },
-      { name: "Universal TV", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9117" },
-      { name: "AXN", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/23692" },
+      { name: "Megapix", url: "http://granpirosh.top/live/841866657/c581b7318b/692.m3u8" },
+      { name: "Cinemax", url: "http://granpirosh.top/live/841866657/c581b7318b/682.m3u8" },
+      { name: "Warner Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/749.m3u8" },
+      { name: "Sony Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/21229.m3u8" },
+      { name: "Universal TV", url: "http://granpirosh.top/live/841866657/c581b7318b/743.m3u8" },
+      { name: "AXN", url: "http://granpirosh.top/live/841866657/c581b7318b/676.m3u8" },
       { name: "TNT", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/594019" },
       { name: "TNT Séries", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/108184" },
       { name: "TNT Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/275104" },
-      { name: "Space", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9102" },
-      { name: "Paramount Network", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/240737" },
+      { name: "Space", url: "http://granpirosh.top/live/841866657/c581b7318b/707.m3u8" },
+      { name: "Paramount Network", url: "http://granpirosh.top/live/841866657/c581b7318b/697.m3u8" },
       { name: "AMC", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81601" },
-      { name: "Studio Universal", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9117" },
-      { name: "A&E", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/23157" },
+      { name: "Studio Universal", url: "http://granpirosh.top/live/841866657/c581b7318b/713.m3u8" },
+      { name: "A&E", url: "http://granpirosh.top/live/841866657/c581b7318b/666.m3u8" },
       // Documentários
-      { name: "Discovery Channel", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/30148" },
-      { name: "Discovery Home & Health", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8740" },
-      { name: "Discovery Science", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8746" },
-      { name: "Discovery Theatre", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8751" },
-      { name: "Discovery Turbo", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/3015" },
-      { name: "Animal Planet", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/304492" },,
-      { name: "History Channel", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/304496" },
-      { name: "History 2", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/304500" },
+      { name: "Discovery Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/2577.m3u8" },
+      { name: "Discovery Home & Health", url: "http://granpirosh.top/live/841866657/c581b7318b/2572.m3u8" },
+      { name: "Discovery Science", url: "http://granpirosh.top/live/841866657/c581b7318b/2582.m3u8" },
+      { name: "Discovery Theatre", url: "http://granpirosh.top/live/841866657/c581b7318b/2587.m3u8" },
+      { name: "Discovery Turbo", url: "http://granpirosh.top/live/841866657/c581b7318b/2592.m3u8" },
+      { name: "Animal Planet", url: "http://granpirosh.top/live/841866657/c581b7318b/2602.m3u8" },,
+      { name: "History Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/2617.m3u8" },
+      { name: "History 2", url: "http://granpirosh.top/live/841866657/c581b7318b/2622.m3u8" },
       // Infantil
-      { name: "Cartoon Network", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8699" },
-      { name: "Cartoonito", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8688" },
-      { name: "Nickelodeon", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8989" },
-      { name: "Nick Jr.", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8986" },
-      { name: "Discovery Kids", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8743" },
-      { name: "Gloob", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8888" },
-      { name: "Gloobinho", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/69037" },
+      { name: "Cartoon Network", url: "http://granpirosh.top/live/841866657/c581b7318b/352.m3u8" },
+      { name: "Cartoonito", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8687" },
+      { name: "Nickelodeon", url: "http://granpirosh.top/live/841866657/c581b7318b/372.m3u8" },
+      { name: "Nick Jr.", url: "http://granpirosh.top/live/841866657/c581b7318b/368.m3u8" },
+      { name: "Discovery Kids", url: "http://granpirosh.top/live/841866657/c581b7318b/364.m3u8" },
+      { name: "Gloob", url: "http://granpirosh.top/live/841866657/c581b7318b/377227.m3u8" },
+      { name: "Gloobinho", url: "http://granpirosh.top/live/841866657/c581b7318b/377232.m3u8" },
       { name: "Tooncast", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/131167" },
       // Esportes
-      { name: "Combate", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/13506" },
+      { name: "Combate", url: "http://granpirosh.top/live/841866657/c581b7318b/240.m3u8" },
       { name: "SporTV", url: "http://granpirosh.top/live/841866657/c581b7318b/118881.m3u8" },
       { name: "SporTV 2", url: "http://granpirosh.top/live/841866657/c581b7318b/554.m3u8" },
       { name: "SporTV 3", url: "http://granpirosh.top/live/841866657/c581b7318b/559.m3u8" },
-      { name: "ESPN", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/598913" },
-      { name: "ESPN 2", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/13519" },
-      { name: "ESPN 3", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/13520" },
-      { name: "ESPN 4", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/21647" },
+      { name: "ESPN", url: "http://granpirosh.top/live/841866657/c581b7318b/309458.m3u8" },
+      { name: "ESPN 2", url: "http://granpirosh.top/live/841866657/c581b7318b/215.m3u8" },
+      { name: "ESPN 3", url: "http://granpirosh.top/live/841866657/c581b7318b/220.m3u8" },
+      { name: "ESPN 4", url: "http://granpirosh.top/live/841866657/c581b7318b/225.m3u8" },
       { name: "ESPN 5", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81594" },
       { name: "ESPN 6", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81590" },
-      { name: "BandSports", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8662" },
-      { name: "Premiere", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/13583" },
-      { name: "Premiere 2", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/69028" },
-      { name: "Premiere 3", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/6903" },
-      { name: "Premiere 4", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/108297" },
-      { name: "Premiere 5", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/108303"},
-      { name: "Premiere 6", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/108309"},
-      { name: "Premiere 7", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/108315" },
-      { name: "Premiere 8", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9036"},
+      { name: "BandSports", url: "http://granpirosh.top/live/841866657/c581b7318b/235.m3u8" },
+      { name: "Premiere", url: "http://granpirosh.top/live/841866657/c581b7318b/494.m3u8" },
+      { name: "Premiere 2", url: "http://granpirosh.top/live/841866657/c581b7318b/499.m3u8" },
+      { name: "Premiere 3", url: "http://granpirosh.top/live/841866657/c581b7318b/504.m3u8" },
+      { name: "Premiere 4", url: "http://granpirosh.top/live/841866657/c581b7318b/509.m3u8" },
+      { name: "Premiere 5", url: "http://granpirosh.top/live/841866657/c581b7318b/514.m3u8" },
+      { name: "Premiere 6", url: "http://granpirosh.top/live/841866657/c581b7318b/519.m3u8" },
+      { name: "Premiere 7", url: "http://granpirosh.top/live/841866657/c581b7318b/519.m3u8" },
+      { name: "Premiere 8", url: "http://granpirosh.top/live/841866657/c581b7318b/380749.m3u8" },
     ];
     let currentChannelIndex = 0;
 
@@ -361,60 +367,53 @@
         video.muted = !userHasInteracted;
         video.controls = false; // Esconde os controles nativos do vídeo
 
-        // Configurações otimizadas para hls.js para maior resiliência
-        const hlsConfig = {
-          // Aumenta o tempo máximo de buffer para ajudar em conexões instáveis
-          maxMaxBufferLength: 60,
-          // Configurações de retry para falhas de fragmento
-          fragLoadingMaxRetryTimeout: 20000, // 20 segundos
-          fragLoadingRetryDelay: 1000, // Adiciona um atraso de 1s antes de tentar novamente
-          // Configurações de retry para falhas de playlist
-          manifestLoadingMaxRetry: 2,
-          manifestLoadingMaxRetryTimeout: 20000,
-          manifestLoadingRetryDelay: 1000, // Adiciona um atraso de 1s antes de tentar novamente
-          // Inicia na qualidade mais baixa para garantir um início rápido
-          startLevel: 0,
-        };
-
         if (Hls.isSupported()) {
+          // Configuração robusta para hls.js com recuperação de erro aprimorada
+          const hlsConfig = {
+            // Tenta recarregar um segmento 3 vezes antes de desistir
+            fragLoadingMaxRetry: 3,
+            // Aumenta o tempo limite de carregamento do segmento para 20 segundos
+            fragLoadingTimeOut: 20000,
+            // Tenta recarregar o manifesto 2 vezes
+            manifestLoadingMaxRetry: 2,
+            // Delay antes de tentar de novo (em ms)
+            fragLoadingRetryDelay: 1000,
+            manifestLoadingRetryDelay: 1000,
+          };
           hls = new Hls(hlsConfig);
-          // Adiciona um listener para erros de mídia ou rede
+
+          // Listener de erro aprimorado para recuperação automática
           hls.on(Hls.Events.ERROR, function (event, data) {
+            // Só nos importamos com erros fatais que podem parar a reprodução
             if (data.fatal) {
-              console.error('Erro fatal no HLS.js:', data);
+              console.warn(`Erro fatal detectado no HLS: ${data.type} - ${data.details}`);
               switch (data.type) {
+                // Erro de rede (ex: falha ao carregar segmento .ts, 404)
                 case Hls.ErrorTypes.NETWORK_ERROR:
-                  // Tenta se recuperar de erros de rede reiniciando o carregamento
-                  console.log('Erro de rede detectado, tentando reiniciar o carregamento...');
+                  console.warn('Erro de rede: Tentando reiniciar o carregamento do stream...');
+                  // Tenta recarregar o stream do zero
                   hls.startLoad();
                   break;
+                // Erro de mídia (ex: buffer, codec)
                 case Hls.ErrorTypes.MEDIA_ERROR:
-                  // Tenta se recuperar de erros de mídia
-                  console.log('Erro de mídia detectado, tentando recuperar...');
+                  console.warn('Erro de mídia: Tentando recuperar...');
+                  // Tenta pular o frame/segmento quebrado
                   hls.recoverMediaError();
                   break;
+                // Erro desconhecido ou não recuperável
                 default:
-                  // Se for um erro irrecuperável, recria o player
-                  console.log('Erro fatal irrecuperável, recarregando o canal...');
+                  console.error('Erro fatal não recuperável. Recriando o player.');
+                  // Como último recurso, recarrega o canal.
                   changeChannel(channels[currentChannelIndex], true);
                   break;
               }
             }
-          });
-          // Ouve o evento que informa quando as qualidades estão disponíveis
-          hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-            console.log(`Manifesto parseado. Níveis de qualidade encontrados: ${data.levels.length}`);
-            availableQualities = data.levels;
-            // Se houver mais de uma qualidade, o modo automático (ABR) é ativado por padrão.
-            // hls.currentLevel = -1; // -1 para modo automático
           });
 
           hls.loadSource(url);
           hls.attachMedia(video);
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           // Suporte nativo em navegadores como Safari
-          // Adiciona um listener de erro para o player nativo também
-          video.addEventListener('error', () => handleVideoError(video));
           video.src = url;
         }
         return video;
@@ -439,13 +438,6 @@
           });
           mpegtsPlayer.attachMediaElement(video);
           mpegtsPlayer.load();
-          
-          // Adiciona tratamento de erro para o mpegts.js
-          mpegtsPlayer.on(mpegts.Events.ERROR, (error) => {
-            console.error('Erro no mpegts.js:', error);
-            // Tenta recarregar o canal em caso de erro
-            changeChannel(channels[currentChannelIndex], true);
-          });
         } else {
           console.error('Seu navegador não suporta mpegts.js (Media Source Extensions).');
         }
@@ -464,78 +456,10 @@
       return player;
     }
 
-    // Inicia o detector de travamento (stall) para o player de vídeo
-    function startStallDetector(video) {
-      // Limpa qualquer detector anterior
-      if (stallDetector) {
-        clearInterval(stallDetector);
-      }
-      lastTime = video.currentTime; // Inicia com o tempo atual
-      stallRetryCount = 0; // Reseta o contador de tentativas
-      availableQualities = []; // Limpa as qualidades do canal anterior
-
-      stallDetector = setInterval(() => {
-        if (video.paused || video.seeking || video.ended) {
-          // Se o vídeo estiver pausado ou buscando, não faz nada e reseta o tempo
-          lastTime = video.currentTime;
-          return;
-        }
-
-        // Compara o tempo atual com o tempo da última verificação
-        if (Math.abs(video.currentTime - lastTime) < 0.5) { // Aumenta a tolerância ligeiramente
-          // O tempo não mudou, o vídeo provavelmente travou.
-          stallRetryCount++;
-          console.warn(`Detector de travamento: Vídeo congelado. Tentativa de recuperação #${stallRetryCount}.`);
-          
-          // Tenta reduzir a qualidade primeiro, se houver HLS e qualidades disponíveis
-          if (hls && availableQualities.length > 1 && hls.currentLevel > 0) {
-            console.log(`Tentando reduzir a qualidade. Nível atual: ${hls.currentLevel}. Trocando para ${hls.currentLevel - 1}`);
-            // Força a troca para o próximo nível mais baixo
-            hls.currentLevel = hls.currentLevel - 1;
-            stallRetryCount = 0; // Reseta o contador, pois tomamos uma ação
-          } else if (stallRetryCount < 2) {
-            // Se não for possível reduzir a qualidade, tenta a recuperação leve
-            console.log('Não é possível reduzir a qualidade. Tentando recuperação leve do HLS...');
-            if (hls) hls.startLoad();
-          } else {
-            // Se nada funcionou, parte para a recuperação completa
-            console.error('Recuperação leve falhou. Iniciando recarregamento completo do canal.');
-            clearInterval(stallDetector); // Para de verificar para não causar loops
-            changeChannel(channels[currentChannelIndex], true);
-          }
-        }
-        lastTime = video.currentTime;
-      }, 4000); // Verifica a cada 4 segundos
-    }
-
-    // Função auxiliar para tratar erros no elemento de vídeo
-    function handleVideoError(videoElement) {
-      // Verifica se já estamos tratando um erro para este elemento para evitar chamadas múltiplas
-      if (videoElement.dataset.reloading === 'true') return;
-      videoElement.dataset.reloading = 'true';
-
-      console.error("Erro no elemento de vídeo. Tentando recarregar o canal...");
-      
-      // Remove o listener de erro para não ser acionado novamente durante a recarga
-      videoElement.removeEventListener('error', handleVideoError);
-      changeChannel(channels[currentChannelIndex], true); // Tenta recarregar o canal atual
-    }
     function changeChannel(channel, isRetry = false) {
       const playerContainer = document.getElementById('playerContainer');
       const oldPlayer = document.getElementById('player');
       const staticOverlay = document.getElementById('static-overlay');
-
-      // CORREÇÃO CRÍTICA: Limpa o estado de 'reloading' do player antigo.
-      // Isso previne que a recuperação falhe se um erro ocorrer durante a recarga.
-      if (oldPlayer) {
-        delete oldPlayer.dataset.reloading;
-      }
-      // Para qualquer detector de travamento que esteja rodando
-      if (stallDetector) {
-        clearInterval(stallDetector);
-        stallDetector = null;
-        availableQualities = [];
-      }
 
       // Mostra o efeito de estática
       staticOverlay.style.display = 'block';
@@ -544,35 +468,37 @@
         showProgramGuide(channel);
       }
 
-      // Remove o player antigo do DOM de forma segura ANTES de destruir as instâncias.
-      // Isso ajuda o navegador a liberar recursos mais rapidamente.
+      // Limpeza completa do player antigo para evitar vazamentos de memória
       if (oldPlayer) {
-        // Limpeza explícita de listeners para evitar memory leaks
+        // Para players de vídeo (<video>)
         if (oldPlayer.tagName === 'VIDEO') {
-          oldPlayer.removeEventListener('error', handleVideoError);
+          // 1. Pausa o vídeo
+          oldPlayer.pause();
+          // 2. Desanexa as bibliotecas de streaming
+          if (hls) {
+            hls.detachMedia();
+            hls.destroy();
+            hls = null;
+          }
+          if (mpegtsPlayer) {
+            mpegtsPlayer.detachMediaElement();
+            mpegtsPlayer.destroy();
+            mpegtsPlayer = null;
+          }
+          // 3. Limpa a fonte e remove listeners para liberar recursos
+          oldPlayer.src = '';
+          oldPlayer.removeAttribute('src'); // Garante a remoção
+          oldPlayer.load(); // Pede ao elemento para não carregar mais a mídia antiga
         }
-        oldPlayer.pause(); // Garante que a reprodução pare
-        oldPlayer.src = ''; // Libera a fonte do vídeo/iframe
+        // 4. Finalmente, remove o elemento antigo da DOM de forma segura
         oldPlayer.remove();
       }
 
-      // Garante a destruição completa dos players anteriores
-      if (hls) {
-        hls.stopLoad();
-        hls.destroy();
-        hls = null;
-      }
-      if (mpegtsPlayer) {
-        mpegtsPlayer.unload();
-        mpegtsPlayer.detachMediaElement();
-        mpegtsPlayer.destroy();
-        mpegtsPlayer = null;
-      }
-
-      if (!channel || !channel.url) return; // Não faz nada se a URL for inválida
+      // Se o canal for inválido, esconde a estática e para a execução
+      if (!channel || !channel.url) { staticOverlay.style.display = 'none'; return; }
 
       // Adiciona um pequeno atraso para o efeito de estática ser visível
-      const loadTimeout = setTimeout(() => {
+      setTimeout(() => {
         // 1. Cria o novo player
         const newPlayer = createPlayer(channel.url);
         // 2. Adiciona o novo player ao container
@@ -586,8 +512,15 @@
               // Autoplay com som iniciado com sucesso!
               newPlayer.muted = false;
               staticOverlay.style.display = 'none';
-              newPlayer.addEventListener('error', () => handleVideoError(newPlayer), { once: true });
-              startStallDetector(newPlayer); // Inicia o detector de travamento
+              // Adiciona um listener de erro para tentar recarregar o canal
+              newPlayer.addEventListener('error', () => {
+                console.error("Erro no elemento de vídeo. Tentando recarregar o canal...");
+                // Evita loops infinitos de recarregamento
+                if (!newPlayer.dataset.reloading) {
+                  newPlayer.dataset.reloading = 'true';
+                  changeChannel(channel, true); // Tenta recarregar
+                }
+              });
             }).catch(error => {
               // Autoplay foi bloqueado pelo navegador.
               console.error("Autoplay bloqueado:", error);
@@ -599,7 +532,7 @@
           // Para iframes, apenas escondemos a estática após um tempo.
           staticOverlay.style.display = 'none';
         }
-      }, isRetry ? 500 : 50); // Atraso menor na tentativa de recarga, mais rápido na troca normal
+      }, 50); // Reduzi o atraso para uma troca de canal mais ágil
     }
 
     // Nova função centralizada para selecionar um canal pelo seu índice na lista
@@ -721,10 +654,10 @@
         event.preventDefault(); // Previne o comportamento padrão das teclas
         if (event.key === '0') { // A tecla '0' também fecha o guia
           hideVerticalGuide();
-        } else if (KEYS_UP.includes(event.key)) { // Navegação para cima no guia
+        } else if (KEYS_UP.includes(event.key) || event.key === 'ColorF1Green') { // Navegação para cima no guia (seta ou VERDE)
           guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
           updateGuideSelection();
-        } else if (KEYS_DOWN.includes(event.key)) {
+        } else if (KEYS_DOWN.includes(event.key) || event.key === 'ColorF0Red') { // Navegação para baixo no guia (seta ou VERMELHO)
           guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
           updateGuideSelection();
         } else if (KEYS_OK.includes(event.key)) { // 'OK' e 'Select' são comuns em controles
@@ -836,11 +769,11 @@
       }
     });
 
-    // Adiciona a funcionalidade de abrir/fechar o guia com o botão direito do mouse
+    // Adiciona a funcionalidade de abrir/fechar o guia de canais com o botão direito do mouse
     window.addEventListener('contextmenu', (event) => {
-      event.preventDefault(); // Impede que o menu de contexto padrão do navegador apareça
-
-      // Alterna a visibilidade do guia vertical
+      // Impede que o menu de contexto padrão do navegador apareça
+      event.preventDefault(); 
+      // Alterna a visibilidade do guia: se estiver visível, esconde; senão, mostra.
       if (isGuideVisible) {
         hideVerticalGuide();
       } else {
@@ -858,18 +791,5 @@
         }
       }, 0);
     });
-
-    // Registra o Service Worker para cache e performance
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('Service Worker registrado com sucesso! Escopo:', registration.scope);
-          })
-          .catch(error => {
-            console.error('Falha ao registrar o Service Worker:', error);
-          });
-      });
-    }
   </script>
 </html>
