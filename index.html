@@ -9,17 +9,28 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* Esconde barras de rolagem */
-      background-color: #000; /* Fundo preto para imersão */
-      font-family: system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif; /* Pilha de fontes moderna e profissional */
-      cursor: none !important; /* Oculta o cursor do mouse para experiência de TV */
-    }    
+      overflow: hidden;
+      background-color: #000;
+      font-family: system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      cursor: none;
+    }
     #playerContainer {
       width: 100%;
       height: 100%;
       position: absolute;
       top: 0;
       left: 0;
+    }
+    #click-shield {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    #click-shield.hide-cursor {
+      cursor: none;
     }
     iframe {
       width: 100%;
@@ -30,27 +41,25 @@
     .video-js {
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      font-size: 14px; /* Ajusta o tamanho base da fonte para a UI do video.js */
+      font-size: 14px;
     }
     .video-js .vjs-tech {
       object-fit: cover;
     }
-    /* Esconde a barra de controle e o botão de play grande */
     .video-js .vjs-control-bar, .video-js .vjs-big-play-button {
       display: none !important;
     }
 
     #channel-input-display {
       position: absolute;
-      top: 20px; /* Distância do topo */
-      right: 20px; /* Distância da direita */
-      z-index: 20; /* Mais alto que os controles */
+      top: 20px;
+      right: 20px;
+      z-index: 20;
       background-color: rgba(0, 0, 0, 0.75);
       color: white;
-      font-size: 6vw; /* Tamanho de fonte ajustado para o canto */
-      font-weight: bold; /* CORREÇÃO: 'bold' é o valor correto para negrito */
-      font-family: 'Courier New', Courier, monospace; /* Fonte monoespaçada para números */
+      font-size: 6vw;
+      font-weight: bold;
+      font-family: 'Courier New', Courier, monospace;
       padding: 10px 25px;
       border-radius: 10px;
       border: 2px solid #fff;
@@ -61,8 +70,8 @@
       pointer-events: none;
     }
     #channel-input-display.invalid {
-      color: #ff4d4d; /* Cor vermelha para o texto */
-      border-color: #ff4d4d; /* Cor vermelha para a borda */
+      color: #ff4d4d;
+      border-color: #ff4d4d;
     }
     #channel-info-display {
       position: absolute;
@@ -86,34 +95,32 @@
       left: 0;
       width: 100%;
       z-index: 10;
-      /* Fundo com gradiente e sombra para um visual mais moderno */
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)); /* Mais transparente */
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2); /* Sombra mais sutil */
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
       color: white;
-      padding: 15px 20px; /* Reduz o preenchimento vertical */
+      padding: 15px 20px;
       box-sizing: border-box;
       transform: translateY(100%);      
       transition: transform 0.4s ease-out;
       pointer-events: none;
-      text-align: center; /* Centraliza todo o texto dentro do painel */
+      text-align: center;
     }
     #program-guide.visible {
       transform: translateY(0);
     }
     #program-guide .channel-name {
-      font-size: 2.2em; /* Reduz o tamanho do nome do canal */
+      font-size: 2.2em;
       font-weight: bold;
-      margin-bottom: 10px; /* Reduz o espaço abaixo do nome */
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.5); /* Sombra no texto para legibilidade */
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
     }
     #program-guide .program-info {
-      font-size: 1.1em; /* Reduz a fonte da programação */
-      margin-top: 8px; /* Ajusta o espaço entre as linhas de programa */
+      font-size: 1.1em;
+      margin-top: 8px;
     }
     #program-guide .program-info .label {
-      /* Cor mais clara para o rótulo, mas ainda sutil */
       color: #ccc;
       font-weight: bold;
       margin-right: 10px;
@@ -122,7 +129,7 @@
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: url('https://i.gifer.com/origin/f5/f5baef4b6b6677020ab8d414c79aa991_w200.gif');
       z-index: 999;
-      display: none; /* Começa escondido */
+      display: none;
       opacity: 0.7;
     }
     #welcome-overlay {
@@ -138,27 +145,25 @@
       align-items: center;
       font-size: 24px;
       font-weight: bold;
-      z-index: 100; /* Fica em cima de tudo */
+      z-index: 100;
     }
-    /* Estilos para o Guia de Canais Vertical */
     #vertical-guide {
       position: fixed;
-      right: 0; /* Movido para a direita */
+      right: 0;
       top: 0;
       height: 100%;
-      width: 350px; /* Largura do guia */
-      /* Fundo com gradiente para mais profundidade */
+      width: 350px;
       background: linear-gradient(to left, rgba(10, 10, 10, 0.95), rgba(20, 20, 20, 0.85));
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       z-index: 30;
       color: white;
-      overflow-y: auto; /* Permite rolagem se a lista for grande */
-      transform: translateX(100%); /* Ajustado para a direita */
+      overflow-y: auto;
+      transform: translateX(100%);
       transition: transform 0.3s ease-in-out;
       padding: 20px 0;
       box-sizing: border-box;
-      border-left: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil para separar do conteúdo */
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
     }
     #vertical-guide.visible {
       transform: translateX(0);
@@ -183,14 +188,13 @@
       display: flex;
       align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      transition: background-color 0.2s ease; /* Transição suave para o estado ativo/hover */
+      transition: background-color 0.2s ease;
     }
     .guide-item.active {
-      /* Destaque azul mais refinado com borda */
       background-color: rgba(0, 123, 255, 0.2);
       font-weight: bold;
       border-left: 4px solid #007bff;
-      padding-left: 21px; /* Compensa a borda para manter o alinhamento do texto */
+      padding-left: 21px;
     }
     .guide-item .number {
       font-weight: bold;
@@ -198,16 +202,12 @@
     }
   </style>
   <!-- Adiciona a biblioteca Video.js para um player mais robusto -->
-  <!-- Migrado para Shaka Player para performance de streaming otimizada -->
-  <!-- Adicionando Video.js para streams M3U8 e mpegts.js para outros -->
   <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/mpegts.js/dist/mpegts.min.js"></script>
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 </head>
 <body>
   <script>
-    // Força uma única atualização da página por sessão para limpar o cache e a memória.
-    // Isso ajuda a garantir que o player inicie em um estado otimizado.
     (function() {
       if (sessionStorage.getItem('refreshed') !== 'true') {
         sessionStorage.setItem('refreshed', 'true');
@@ -217,8 +217,6 @@
   </script>
 
   <div id="welcome-overlay">Clique para iniciar e ativar o som</div>
-
-  <!-- Guia de canais vertical -->
   <div id="vertical-guide"></div>
   <div id="static-overlay"></div>
   <div id="channel-info-display"></div>
@@ -236,80 +234,71 @@
   <div id="channel-input-display" class="hidden"></div>
 
   <div id="playerContainer">
-    <!-- O player será inserido aqui pelo JavaScript -->
+    <div id="click-shield"></div>
   </div>
 
   <script>
-    // Variável global para manter a instância do Video.js
     let videojsPlayer = null;
-    // Variável global para manter a instância do mpegts.js
     let mpegtsPlayer = null;
-    // Variável para controlar se o usuário já interagiu com a página.
     let userHasInteracted = false;
-    // Variável para o timeout do display de informação do canal
-    let channelInfoTimeout = null;
     let programGuideTimeout = null;
-    // Variáveis para o guia vertical
     let isGuideVisible = false;
     let guideSelectedIndex = 0;
-
-
-    // Estrutura de dados para os canais
+    let cursorTimeout = null;
     const channels = [
       { name: "GLOBO SP", url: "http://granpirosh.top/live/841866657/c581b7318b/289881.m3u8" },
-      { name: "Globoplay Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9215" },
       { name: "SBT", url: "http://granpirosh.top/live/841866657/c581b7318b/244161.m3u8" },
       { name: "Record", url: "http://granpirosh.top/live/841866657/c581b7318b/244071.m3u8" },
       { name: "Band", url: "http://granpirosh.top/live/841866657/c581b7318b/255465.m3u8" },
-      { name: "RedeTV!", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9074" },
-      { name: "TV Cultura", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/21022" },
+      { name: "RedeTV!", url: "http://granpirosh.top/live/841866657/c581b7318b/80170.m3u8" },
+      { name: "TV Cultura", url: "https://embedcanais.com/tvcultura/" },
       { name: "Futura", url: "http://granpirosh.top/live/841866657/c581b7318b/159.m3u8" },
       { name: "TV Brasil", url: "http://granpirosh.top/live/841866657/c581b7318b/364678.m3u8" },
-      { name: "Rede Vida", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9076" },
+      { name: "Rede Vida", url: "https://d12e4o88jd8gex.cloudfront.net/out/v1/cea3de0b76ac4e82ab8ee0fd3f17ce12/index_1.m3u8" },
       { name: "Canção Nova", url: "http://granpirosh.top/live/841866657/c581b7318b/240806.m3u8" },
       { name: "TV Aparecida", url: "https://cdn.jmvstream.com/w/LVW-9716/LVW9716_HbtQtezcaw/playlist.m3u8?PEDROJUNIORTUTORIAIS" },
       { name: "TV Evangelizar", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/69257" },
-      { name: "GNT", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/107984" },
-      { name: "Globoplay Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9215" },
+      { name: "GNT", url: "https://embedcanais.com/gnt/" },
+
+      { name: "Globoplay Novelas", url: "https://embedcanais.com/globoplaynovelas/" },
       { name: "GloboNews", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81598" },
       { name: "CNN Brasil", url: "https://video01.soultv.com.br/cnnbrasil/cnnbrasil/playlist.m3u8" },
-      { name: "Record News", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/9058" },
+      { name: "Record News", url: "https://stream.ads.ottera.tv/playlist.m3u8?network_id=5431" },
       { name: "BandNews TV", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81596" },
-      { name: "Multishow", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8975" },
+      { name: "Multishow", url: "https://embedcanais.com/multishow/" },
       { name: "MTV", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8970" },
       { name: "Canal Brasil", url: "http://granpirosh.top/live/841866657/c581b7318b/146.m3u8" },
       { name: "Comedy Central", url: "http://granpirosh.top/live/841866657/c581b7318b/687.m3u8" },
-      { name: "TLC", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/91400" },
-      // Filmes e Séries
       { name: "Telecine Premium", url: "http://granpirosh.top/live/841866657/c581b7318b/635.m3u8" },
       { name: "Telecine Action", url: "http://granpirosh.top/live/841866657/c581b7318b/615.m3u8" },
       { name: "Telecine Pipoca", url: "http://granpirosh.top/live/841866657/c581b7318b/630.m3u8" },
       { name: "Telecine Fun", url: "http://granpirosh.top/live/841866657/c581b7318b/625.m3u8" },
       { name: "Telecine Touch", url: "http://granpirosh.top/live/841866657/c581b7318b/589.m3u8" },
       { name: "Telecine Cult", url: "http://granpirosh.top/live/841866657/c581b7318b/620.m3u8" },
-      { name: "HBO", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/31863" },
-      { name: "HBO2", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94382" },
-      { name: "HBO Family", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94383" },
-      { name: "HBO Plus", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94385" },
-      { name: "HBO Signature", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94387" },
-      { name: "HBO Pop", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94386" },
-      { name: "HBO Xtreme", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/13535" },
-      { name: "HBO Mundi", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/94384" },
+      
+      { name: "HBO", url: "https://embedcanais.com/hbo/" },
+      { name: "HBO2", url: "https://embedcanais.com/hbo2/" },
+      { name: "HBO Family", url: "https://embedcanais.com/hbofamily/" },
+      { name: "HBO Plus", url: "https://embedcanais.com/hboplus/" },
+      { name: "HBO Signature", url: "https://embedcanais.com/hbosignature/" },
+      { name: "HBO Pop", url: "https://embedcanais.com/hbopop/" },
+      { name: "HBO Xtreme", url: "https://embedcanais.com/hboxtreme/" },
+      { name: "HBO Mundi", url: "https://embedcanais.com/hbomundi/" },
+
       { name: "Megapix", url: "http://granpirosh.top/live/841866657/c581b7318b/692.m3u8" },
       { name: "Cinemax", url: "http://granpirosh.top/live/841866657/c581b7318b/682.m3u8" },
       { name: "Warner Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/749.m3u8" },
       { name: "Sony Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/21229.m3u8" },
       { name: "Universal TV", url: "http://granpirosh.top/live/841866657/c581b7318b/743.m3u8" },
       { name: "AXN", url: "http://granpirosh.top/live/841866657/c581b7318b/676.m3u8" },
-      { name: "TNT", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/594019" },
-      { name: "TNT Séries", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/108184" },
-      { name: "TNT Novelas", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/275104" },
+      { name: "TNT", url: "http://granpirosh.top/live/841866657/c581b7318b/733.m3u8" },
+      { name: "TNT Séries", url: "http://granpirosh.top/live/841866657/c581b7318b/738.m3u8" },
+      { name: "TNT Novelas", url: "http://granpirosh.top/live/841866657/c581b7318b/264555.m3u8" },
       { name: "Space", url: "http://granpirosh.top/live/841866657/c581b7318b/707.m3u8" },
       { name: "Paramount Network", url: "http://granpirosh.top/live/841866657/c581b7318b/697.m3u8" },
-      { name: "AMC", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81601" },
+      { name: "AMC", url: "https://embedcanais.com/amc/" },
       { name: "Studio Universal", url: "http://granpirosh.top/live/841866657/c581b7318b/713.m3u8" },
       { name: "A&E", url: "http://granpirosh.top/live/841866657/c581b7318b/666.m3u8" },
-      // Documentários
       { name: "Discovery Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/2577.m3u8" },
       { name: "Discovery Home & Health", url: "http://granpirosh.top/live/841866657/c581b7318b/2572.m3u8" },
       { name: "Discovery Science", url: "http://granpirosh.top/live/841866657/c581b7318b/2582.m3u8" },
@@ -318,7 +307,7 @@
       { name: "Animal Planet", url: "http://granpirosh.top/live/841866657/c581b7318b/2602.m3u8" },
       { name: "History Channel", url: "http://granpirosh.top/live/841866657/c581b7318b/2617.m3u8" },
       { name: "History 2", url: "http://granpirosh.top/live/841866657/c581b7318b/2622.m3u8" },
-      // Infantil
+      { name: "Canal Off", url: "https://embedcanais.com/canaloff/" },
       { name: "Cartoon Network", url: "http://granpirosh.top/live/841866657/c581b7318b/352.m3u8" },
       { name: "Cartoonito", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/8687" },
       { name: "Nickelodeon", url: "http://granpirosh.top/live/841866657/c581b7318b/372.m3u8" },
@@ -327,7 +316,6 @@
       { name: "Gloob", url: "http://granpirosh.top/live/841866657/c581b7318b/377227.m3u8" },
       { name: "Gloobinho", url: "http://granpirosh.top/live/841866657/c581b7318b/377232.m3u8" },
       { name: "Tooncast", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/131167" },
-      // Esportes
       { name: "Combate", url: "http://granpirosh.top/live/841866657/c581b7318b/240.m3u8" },
       { name: "SporTV", url: "http://granpirosh.top/live/841866657/c581b7318b/118881.m3u8" },
       { name: "SporTV 2", url: "http://granpirosh.top/live/841866657/c581b7318b/554.m3u8" },
@@ -336,7 +324,7 @@
       { name: "ESPN 2", url: "http://granpirosh.top/live/841866657/c581b7318b/215.m3u8" },
       { name: "ESPN 3", url: "http://granpirosh.top/live/841866657/c581b7318b/220.m3u8" },
       { name: "ESPN 4", url: "http://granpirosh.top/live/841866657/c581b7318b/225.m3u8" },
-      { name: "ESPN 5", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81594" },
+      { name: "ESPN 5", url: "http://granpirosh.top/live/841866657/c581b7318b/228.m3u8" },
       { name: "ESPN 6", url: "http://vivofibratech.org:80/Q3sdXWJw8Kxxx22222/pKefJHyVKExxxxxxxxa12/81590" },
       { name: "BandSports", url: "http://granpirosh.top/live/841866657/c581b7318b/235.m3u8" },
       { name: "Premiere", url: "http://granpirosh.top/live/841866657/c581b7318b/494.m3u8" },
@@ -353,7 +341,6 @@
       const guide = document.getElementById('program-guide');
       document.getElementById('guide-channel-name').textContent = `${channels.indexOf(channel) + 1}. ${channel.name}`;
       
-      // Atualiza as informações de programação com base nos dados do canal
       const currentProgramEl = document.getElementById('guide-current-program');
       const nextProgramEl = document.getElementById('guide-next-program');
 
@@ -362,12 +349,12 @@
 
       guide.classList.add('visible');
       clearTimeout(programGuideTimeout);
-      programGuideTimeout = setTimeout(() => guide.classList.remove('visible'), 5000); // Esconde após 5 segundos
+      programGuideTimeout = setTimeout(() => guide.classList.remove('visible'), 5000);
     }
 
     function createPlayer(url) {
-      // Para URLs específicas que exigem iframe, mantemos a lógica.
-      if (url.includes('embedcanais.com')) {
+      const isDirectStream = url.includes('.m3u8') || url.includes(':80/');
+      if (!isDirectStream) {
         const player = document.createElement('iframe');
         player.id = 'player';
         const autoPlayUrl = new URL(url);
@@ -375,20 +362,37 @@
         autoPlayUrl.searchParams.set('autostart', 'true');
         player.src = autoPlayUrl.toString();
         player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-        player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation');
+        player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts');
+        player.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-pointer-lock');
         return player;
       }
 
-      // Para todos os outros, usamos o player de vídeo padrão para video.js
       const video = document.createElement('video');
       video.id = 'player';
-      video.className = 'video-js vjs-default-skin'; // Mantemos as classes para o estilo de preenchimento
+      video.className = 'video-js vjs-default-skin';
       return video;
     }
 
-    function changeChannel(channel, isRetry = false) {
+    function handlePlayerError(playerType, channel, urlIndex, hasFallback, nextUrlIndex) {
+      console.error(`${playerType} Erro Detectado.`);
+      if (hasFallback) {
+        console.warn(`${playerType}: Link principal falhou. Tentando fallback...`);
+        changeChannel(channel, { isRetry: true, urlIndex: nextUrlIndex });
+      } else {
+        setTimeout(() => {
+          console.warn(`${playerType}: Tentando recuperar do erro (recarregando)...`);
+          changeChannel(channel, { isRetry: true, urlIndex: urlIndex });
+        }, 2000);
+      }
+    }
+
+    function changeChannel(channel, retryOptions = { isRetry: false, urlIndex: 0 }) {
       const playerContainer = document.getElementById('playerContainer');
       const staticOverlay = document.getElementById('static-overlay');
+      const { isRetry, urlIndex } = retryOptions;
+      const urlToPlay = Array.isArray(channel.url) ? channel.url[urlIndex] : channel.url;
+      const hasFallback = Array.isArray(channel.url) && urlIndex < channel.url.length - 1;
+      const nextUrlIndex = urlIndex + 1;
 
       // Mostra o efeito de estática
       staticOverlay.style.display = 'block';
@@ -397,7 +401,6 @@
         showProgramGuide(channel);
       }
 
-      // Limpeza completa do player antigo para evitar vazamentos de memória
       if (videojsPlayer) {
         videojsPlayer.dispose();
         videojsPlayer = null;
@@ -407,40 +410,43 @@
         mpegtsPlayer.destroy();
         mpegtsPlayer = null;
       }
-      if (!videojsPlayer && !mpegtsPlayer) {
-        // Limpa iframes ou outros elementos que não sejam video.js
-        const oldPlayer = document.getElementById('player');
-        if (oldPlayer) oldPlayer.remove();
-      }
-      // Remove qualquer elemento de player restante (seja de mpegts.js ou iframe)
       const oldPlayer = document.getElementById('player');
-      if (oldPlayer) oldPlayer.remove();
+      if (oldPlayer) {
+        if (oldPlayer.tagName === 'IFRAME') {
+          oldPlayer.src = 'about:blank';
+        }
+        oldPlayer.remove();
+      }
 
-      // Se o canal for inválido, esconde a estática e para a execução
-      if (!channel || !channel.url) { staticOverlay.style.display = 'none'; return; }
+      if (!channel || !urlToPlay) { staticOverlay.style.display = 'none'; return; }
 
-      // Adiciona um pequeno atraso para o efeito de estática ser visível
       setTimeout(() => {
-        const newPlayerElement = createPlayer(channel.url);
+        const newPlayerElement = createPlayer(urlToPlay);
         playerContainer.appendChild(newPlayerElement);
 
-        // Se for um iframe, a lógica termina aqui.
+        const isEmbed = newPlayerElement.tagName === 'IFRAME';
+        const clickShield = document.getElementById('click-shield');
+
+        clearTimeout(cursorTimeout);
+        window.onmousemove = null;
+        clickShield.onclick = null;
+        clickShield.style.pointerEvents = 'none';
+        clickShield.classList.remove('hide-cursor');
+
         if (newPlayerElement.tagName === 'IFRAME') {
           staticOverlay.style.display = 'none';
           return;
         }
 
-        // Lógica para decidir qual player usar
-        const isHls = channel.url.includes('.m3u8');
+        const isHls = urlToPlay.includes('.m3u8');
 
         if (isHls) {
-          // --- USA VIDEO.JS PARA HLS (.m3u8) ---
           const playerOptions = {
             autoplay: true,
             muted: !userHasInteracted,
             controls: false,
             preload: 'auto',
-            sources: [{ src: channel.url, type: 'application/x-mpegURL' }]
+            sources: [{ src: urlToPlay, type: 'application/x-mpegURL' }]
           };
 
           videojsPlayer = videojs('player', playerOptions, function() {
@@ -448,28 +454,11 @@
             staticOverlay.style.display = 'none';
             userHasInteracted = true;
 
-            // Listener de erro para recuperação automática
             this.on('error', function() {
-              const error = this.error();
-              console.error("Video.js Erro Detectado:", error ? error.message : 'Erro desconhecido');
-
-              // Tenta se recuperar após 2 segundos
-              setTimeout(() => {
-                console.warn("Video.js: Tentando recuperar do erro...");
-                try {
-                  this.src(this.currentSrc()); // Recarrega a fonte
-                  this.load();
-                  this.play();
-                } catch (e) {
-                  console.error("Falha ao tentar recuperar:", e);
-                  // Como último recurso, recarrega o canal do zero
-                  changeChannel(channel, true);
-                }
-              }, 2000);
+              handlePlayerError('Video.js', channel, urlIndex, hasFallback, nextUrlIndex);
             });
           });
         } else if (!isHls && typeof mpegts !== 'undefined' && mpegts.isSupported()) {
-          // --- USA mpegts.js PARA STREAMS TS BRUTOS ---
           const videoElement = document.getElementById('player');
           videoElement.autoplay = true;
           videoElement.muted = !userHasInteracted;
@@ -478,17 +467,13 @@
           mpegtsPlayer = mpegts.createPlayer({
             type: 'mpegts',
             isLive: true,
-            url: channel.url,
-            // *** INÍCIO DA CORREÇÃO ***
-            // Configuração para mpegts.js também tentar contornar o CORS
+            url: urlToPlay,
             cors: true,
             withCredentials: false
-            // *** FIM DA CORREÇÃO ***
           });
 
           mpegtsPlayer.on(mpegts.Events.ERROR, (error) => {
-            console.error('MPEGTS.js Erro:', error);
-            setTimeout(() => changeChannel(channel, true), 2000);
+            handlePlayerError('MPEGTS.js', channel, urlIndex, hasFallback, nextUrlIndex);
           });
 
           mpegtsPlayer.attachMediaElement(videoElement);
@@ -507,95 +492,9 @@
           console.error('Nenhum player compatível encontrado para esta URL ou navegador.');
           staticOverlay.style.display = 'none';
         }
-
-      }, 50); // Atraso para a troca de canal
+      }, 50);
     }
 
-    /*
-    // A função changeChannel antiga foi removida e substituída pela nova acima.
-    // O código abaixo é mantido para referência do que foi substituído.
-
-    function old_changeChannel(channel, isRetry = false) {
-      const playerContainer = document.getElementById('playerContainer');
-      const oldPlayer = document.getElementById('player');
-      const staticOverlay = document.getElementById('static-overlay');
-
-      // Mostra o efeito de estática
-      staticOverlay.style.display = 'block';
-
-      if (!isRetry) {
-        showProgramGuide(channel);
-      }
-
-      // Limpeza completa do player antigo para evitar vazamentos de memória
-      if (oldPlayer) {
-        // Para players de vídeo (<video>)
-        if (oldPlayer.tagName === 'VIDEO') {
-          // 1. Pausa o vídeo
-          oldPlayer.pause();
-          // 2. Desanexa as bibliotecas de streaming
-          if (hls) {
-            hls.detachMedia();
-            hls.destroy();
-            hls = null;
-          }
-          if (mpegtsPlayer) {
-            mpegtsPlayer.detachMediaElement();
-            mpegtsPlayer.destroy();
-            mpegtsPlayer = null;
-          }
-          // 3. Limpa a fonte e remove listeners para liberar recursos
-          oldPlayer.src = '';
-          oldPlayer.removeAttribute('src'); // Garante a remoção
-          oldPlayer.load(); // Pede ao elemento para não carregar mais a mídia antiga
-        }
-        // 4. Finalmente, remove o elemento antigo da DOM de forma segura
-        oldPlayer.remove();
-      }
-
-      // Se o canal for inválido, esconde a estática e para a execução
-      if (!channel || !channel.url) { staticOverlay.style.display = 'none'; return; }
-
-      // Adiciona um pequeno atraso para o efeito de estática ser visível
-      setTimeout(() => {
-        // 1. Cria o novo player
-        const newPlayer = createPlayer(channel.url);
-        // 2. Adiciona o novo player ao container
-        playerContainer.appendChild(newPlayer);
-
-        // 3. Tenta iniciar a reprodução APÓS o player estar no DOM
-        if (newPlayer.tagName === 'VIDEO') {
-          const playPromise = newPlayer.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              // Autoplay com som iniciado com sucesso!
-              newPlayer.muted = false;
-              staticOverlay.style.display = 'none';
-              // Adiciona um listener de erro para tentar recarregar o canal
-              newPlayer.addEventListener('error', () => {
-                console.error("Erro no elemento de vídeo. Tentando recarregar o canal...");
-                // Evita loops infinitos de recarregamento
-                if (!newPlayer.dataset.reloading) {
-                  newPlayer.dataset.reloading = 'true';
-                  changeChannel(channel, true); // Tenta recarregar
-                }
-              });
-            }).catch(error => {
-              // Autoplay foi bloqueado pelo navegador.
-              console.error("Autoplay bloqueado:", error);
-              staticOverlay.style.display = 'none';
-            });
-          }
-
-        } else {
-          // Para iframes, apenas escondemos a estática após um tempo.
-          staticOverlay.style.display = 'none';
-        }
-      }, 50); // Reduzi o atraso para uma troca de canal mais ágil
-    }
-    */
-
-    // Nova função centralizada para selecionar um canal pelo seu índice na lista
     function selectChannelByIndex(index) {
       if (index >= 0 && index < channels.length) {
         currentChannelIndex = index;
@@ -607,63 +506,52 @@
     function requestFullscreenFromUserAction() {
         const elem = document.documentElement;
         if (elem.requestFullscreen) {
-            // A solicitação de tela cheia deve ser iniciada por um gesto do usuário (clique/tecla)
             elem.requestFullscreen().catch(err => {
-                // Este erro é comum se a solicitação não for de uma ação direta, como no timeout dos números.
                 console.warn(`Aviso de tela cheia: ${err.message}`);
             });
         }
     }
 
-    // Nova função para navegar para o próximo/anterior canal
     function navigateChannel(direction) {
-      cancelNumericInput(); // Cancela qualquer digitação de canal pendente
+      cancelNumericInput();
       const totalChannels = channels.length;
       const nextIndex = (currentChannelIndex + direction + totalChannels) % totalChannels;
       selectChannelByIndex(nextIndex);
     }
 
-    // Cria e popula o guia de canais vertical
     function createVerticalGuide() {
       const guideContainer = document.getElementById('vertical-guide');
       channels.forEach((channel, index) => {
         const item = document.createElement('div');
         item.className = 'guide-item';
-        item.dataset.index = index; // Armazena o índice para fácil acesso
+        item.dataset.index = index;
         item.innerHTML = `<span class="number">${index + 1}</span> <span class="name">${channel.name}</span>`;
-        item.addEventListener('click', () => { // Permite seleção por clique (para depuração/uso em desktop)
+        item.addEventListener('click', () => {
           selectChannelByIndex(index);
           hideVerticalGuide();
         });
         guideContainer.appendChild(item);
       });
     }
-    // Carrega o canal inicial quando a página é aberta
     document.addEventListener('DOMContentLoaded', () => {
       const welcomeOverlay = document.getElementById('welcome-overlay');
 
       welcomeOverlay.addEventListener('click', () => {
-        userHasInteracted = true; // Marca que o usuário interagiu
-        welcomeOverlay.style.display = 'none'; // Esconde a tela de boas-vindas
-
-        // Carrega o canal inicial somente após a primeira interação
+        userHasInteracted = true;
+        welcomeOverlay.style.display = 'none';
         selectChannelByIndex(currentChannelIndex);
 
-        requestFullscreenFromUserAction(); // Opcional: tenta entrar em tela cheia
-      }, { once: true }); // O evento só vai disparar uma vez
+        requestFullscreenFromUserAction();
+      }, { once: true });
 
-      // Popula o guia vertical ao carregar a página
       createVerticalGuide();
     });
 
-    // Lógica para mostrar/esconder a barra de canais
-    let controlsTimeout = null;
     const channelInputDisplay = document.getElementById('channel-input-display');
 
     let channelInputBuffer = '';
     let channelInputTimeout = null;
 
-    // Nova função para centralizar o cancelamento da entrada numérica
     function cancelNumericInput() {
       clearTimeout(channelInputTimeout);
       channelInputBuffer = '';
@@ -671,15 +559,24 @@
     }
 
     function showVerticalGuide() {
+      const clickShield = document.getElementById('click-shield');
       const guide = document.getElementById('vertical-guide');
       isGuideVisible = true;
-      guideSelectedIndex = currentChannelIndex; // Começa no canal atual
+      guideSelectedIndex = currentChannelIndex;
       updateGuideSelection();
       guide.classList.add('visible');
+      clickShield.style.pointerEvents = 'none';
     }
 
     function hideVerticalGuide() {
+      const clickShield = document.getElementById('click-shield');
       const guide = document.getElementById('vertical-guide');
+      const currentPlayer = document.getElementById('player');
+      
+      if (currentPlayer && currentPlayer.tagName === 'IFRAME') {
+        clickShield.style.pointerEvents = 'auto';
+      }
+
       isGuideVisible = false;
       guide.classList.remove('visible');
     }
@@ -689,7 +586,6 @@
       items.forEach((item, index) => {
         if (index === guideSelectedIndex) {
           item.classList.add('active');
-          // Garante que o item ativo esteja visível na tela
           item.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
           item.classList.remove('active');
@@ -697,106 +593,95 @@
       });
     }
 
-    // Constantes para as teclas do controle remoto, evitando repetição
+    function navigateGuideUp() {
+      guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
+      updateGuideSelection();
+    }
+
+    function navigateGuideDown() {
+      guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
+      updateGuideSelection();
+    }
+
     const KEYS_UP = ['ArrowUp', 'Up', 'ChannelUp', 'PageUp'];
     const KEYS_DOWN = ['ArrowDown', 'Down', 'ChannelDown', 'PageDown'];
     const KEYS_OK = ['Enter', 'OK', 'Select'];
     const KEYS_BACK = ['Escape', 'Back', 'GoBack'];
     const KEYS_COLORED = ['ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue'];
 
-    // Adiciona a funcionalidade de mudar de canal com as setas do teclado
     window.addEventListener('keydown', (event) => {
-      // LINHA DE DIAGNÓSTICO: Mostra no console qual tecla foi pressionada.
       console.log('Tecla pressionada:', event.key);
 
-      // Otimização: busca o elemento de vídeo uma vez para ser usado nos controles de mídia
       const videoPlayer = document.querySelector('video#player');
 
-      // Se o guia vertical estiver visível, os controles são para ele
       if (isGuideVisible) {
-        event.preventDefault(); // Previne o comportamento padrão das teclas
-        if (event.key === '0') { // A tecla '0' também fecha o guia
+        event.preventDefault();
+        if (event.key === '0') {
           hideVerticalGuide();
-        } else if (KEYS_UP.includes(event.key) || event.key === 'ColorF1Green') { // Navegação para cima no guia (seta ou VERDE)
-          guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
-          updateGuideSelection();
-        } else if (KEYS_DOWN.includes(event.key) || event.key === 'ColorF0Red') { // Navegação para baixo no guia (seta ou VERMELHO)
-          guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
-          updateGuideSelection();
-        } else if (KEYS_OK.includes(event.key)) { // 'OK' e 'Select' são comuns em controles
+        } else if (KEYS_UP.includes(event.key) || event.key === 'ColorF1Green') {
+          navigateGuideUp();
+        } else if (KEYS_DOWN.includes(event.key) || event.key === 'ColorF0Red') {
+          navigateGuideDown();
+        } else if (KEYS_OK.includes(event.key)) {
           selectChannelByIndex(guideSelectedIndex);
           hideVerticalGuide();
-        } else if (KEYS_BACK.includes(event.key)) { // Tecla Voltar do controle fecha o guia
+        } else if (KEYS_BACK.includes(event.key)) {
           hideVerticalGuide();
         }
-        return; // Ignora o resto do listener
-      } // Fim do bloco if (isGuideVisible)
+        return;
+      }
 
       const isNumericKey = !event.altKey && !event.ctrlKey && event.key >= '0' && event.key <= '9';
 
-      // Lógica para a tecla '0' quando o guia está fechado
       if (event.key === '0' && channelInputBuffer.length === 0) {
         event.preventDefault();
         showVerticalGuide();
-        return; // Impede que o '0' seja adicionado ao buffer de digitação
+        return;
       }
 
-      if (isNumericKey) { // Trata a digitação de qualquer número (incluindo '0' se o buffer não estiver vazio)
-        // Limpa o timeout anterior se o usuário digitar outro número rapidamente
+      if (isNumericKey) {
         clearTimeout(channelInputTimeout);
 
         channelInputBuffer += event.key;
         channelInputDisplay.textContent = channelInputBuffer;
         channelInputDisplay.classList.remove('hidden');
 
-        // Define um timeout para mudar de canal após o usuário parar de digitar
         channelInputTimeout = setTimeout(() => {
           const channelNumber = parseInt(channelInputBuffer, 10);
           const isValidChannel = channelNumber > 0 && channelNumber <= channels.length;
           
           if (isValidChannel) {
-            // Usa a nova função centralizada para mudar de canal
             selectChannelByIndex(channelNumber - 1);
-            cancelNumericInput(); // Limpa e esconde imediatamente
+            cancelNumericInput();
           } else {
-            // Canal inválido: mostra feedback visual em vermelho
             channelInputDisplay.classList.add('invalid');
-            // Esconde o display vermelho após um curto período
             setTimeout(() => {
               channelInputDisplay.classList.remove('invalid');
               cancelNumericInput();
-            }, 700); // Mantém o display vermelho por 0.7 segundos
+            }, 700);
           }
-        }, 1500); // Espera 1.5 segundos antes de mudar
+        }, 1500);
       } else if (KEYS_OK.includes(event.key)) {
-        // Permite que o usuário entre em tela cheia manualmente
         requestFullscreenFromUserAction();
       } else if (KEYS_UP.includes(event.key)) {
-        event.preventDefault(); // Impede a rolagem da página com as setas
-        navigateChannel(1); // 1 para canal seguinte (para cima)
+        event.preventDefault();
+        navigateChannel(1);
       } else if (KEYS_DOWN.includes(event.key)) {
         event.preventDefault();
-        navigateChannel(-1); // -1 para canal anterior (para baixo)
+        navigateChannel(-1);
       } else if (event.key === ' ' || event.code === 'Space') {
-        event.preventDefault(); // Impede o comportamento padrão do espaço (rolar a página)
+        event.preventDefault();
         
         const player = document.getElementById('player');
         if (player) {
-          // Tenta focar no iframe. Isso pode ser suficiente para que o player interno
-          // capture eventos de teclado ou inicie a reprodução.
           player.focus();
         } else {
-          // Se não houver player, recarrega o canal ativo como fallback.
           selectChannelByIndex(currentChannelIndex);
         }
       } else if (KEYS_BACK.includes(event.key)) {
-        // Se a tecla "Voltar" for pressionada e um número estiver sendo digitado, cancela a digitação.
-        // A lógica para fechar o guia já é tratada no bloco 'if (isGuideVisible)' no início.
-        // Aqui, a tecla "Voltar" serve apenas para cancelar a entrada numérica.
         if (channelInputBuffer.length > 0) cancelNumericInput();
       } else if (event.key === 'MediaPlayPause' || event.key === 'Play' || event.key === 'Pause') {
         event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
         if (videoPlayer) {
           if (videoPlayer.paused) {
             videoPlayer.play();
@@ -806,37 +691,27 @@
         }
       } else if (event.key === 'MediaStop' || event.key === 'Stop') {
         event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
         if (videoPlayer) {
           videoPlayer.pause();
-          videoPlayer.currentTime = 0; // Opcional: volta para o início
+          videoPlayer.currentTime = 0;
         }
       } else if (event.key === 'MediaRewind' || event.key === 'Rewind') {
         event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
-        if (videoPlayer) videoPlayer.currentTime -= 10; // Volta 10 segundos
+        if (videoPlayer) videoPlayer.currentTime -= 10;
       } else if (event.key === 'MediaFastForward' || event.key === 'FastForward') {
         event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
-        if (videoPlayer) videoPlayer.currentTime += 10; // Avança 10 segundos
+        if (videoPlayer) videoPlayer.currentTime += 10;
       } else if (KEYS_COLORED.includes(event.key)) {
-        // Reconhece as teclas coloridas do controle remoto
         event.preventDefault();
         console.log(`Tecla colorida pressionada: ${event.key}`);
-        // Futuramente, você pode adicionar funções aqui, como filtrar canais por categoria.
       } else if (event.key === 'Exit') {
-        // Em algumas TVs, a tecla Exit pode fechar o aplicativo.
-        // window.close(); // Descomente se desejar este comportamento.
       } else {
-        return; // Ignora outras teclas
+        return;
       }
     });
 
-    // Adiciona a funcionalidade de abrir/fechar o guia de canais com o botão direito do mouse
     window.addEventListener('contextmenu', (event) => {
-      // Impede que o menu de contexto padrão do navegador apareça
       event.preventDefault(); 
-      // Alterna a visibilidade do guia: se estiver visível, esconde; senão, mostra.
       if (isGuideVisible) {
         hideVerticalGuide();
       } else {
@@ -844,399 +719,22 @@
       }
     });
 
-    // Garante que a janela principal recupere o foco após um clique no iframe.
-    // Isso é crucial para que os atalhos de teclado (números, setas) continuem funcionando.
     window.addEventListener('blur', () => {
-      // Um pequeno atraso é necessário para que o navegador processe o elemento que recebeu o foco.
       setTimeout(() => {
-        if (document.activeElement.tagName === 'IFRAME') {
-          window.focus();
-        }
-      }, 0);
-    });
-  </script>
-</html>
-      player.id = 'player';
-      const autoPlayUrl = new URL(url);
-      autoPlayUrl.searchParams.set('autoplay', '1');
-      autoPlayUrl.searchParams.set('autostart', 'true');
-      player.src = autoPlayUrl.toString();
-      player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-      player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation');
-      return player;
-    }
+        if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+          console.log('Interação com Iframe detectada. Ativando bloqueio e ocultação de cursor.');
+          const clickShield = document.getElementById('click-shield');
 
-    function changeChannel(channel, isRetry = false) {
-      const playerContainer = document.getElementById('playerContainer');
-      const oldPlayer = document.getElementById('player');
-      const staticOverlay = document.getElementById('static-overlay');
+          clickShield.style.pointerEvents = 'auto';
 
-      // Mostra o efeito de estática
-      staticOverlay.style.display = 'block';
+          window.onmousemove = () => {
+            clickShield.classList.remove('hide-cursor');
+            clearTimeout(cursorTimeout);
+            cursorTimeout = setTimeout(() => clickShield.classList.add('hide-cursor'), 2500);
+          };
+          clearTimeout(cursorTimeout);
+          cursorTimeout = setTimeout(() => clickShield.classList.add('hide-cursor'), 2500);
 
-      if (!isRetry) {
-        showProgramGuide(channel);
-      }
-
-      // Limpeza completa do player antigo para evitar vazamentos de memória
-      if (oldPlayer) {
-        // Para players de vídeo (<video>)
-        if (oldPlayer.tagName === 'VIDEO') {
-          // 1. Pausa o vídeo
-          oldPlayer.pause();
-          // 2. Desanexa as bibliotecas de streaming
-          if (hls) {
-            hls.detachMedia();
-            hls.destroy();
-            hls = null;
-          }
-          if (mpegtsPlayer) {
-            mpegtsPlayer.detachMediaElement();
-            mpegtsPlayer.destroy();
-            mpegtsPlayer = null;
-          }
-          // 3. Limpa a fonte e remove listeners para liberar recursos
-          oldPlayer.src = '';
-          oldPlayer.removeAttribute('src'); // Garante a remoção
-          oldPlayer.load(); // Pede ao elemento para não carregar mais a mídia antiga
-        }
-        // 4. Finalmente, remove o elemento antigo da DOM de forma segura
-        oldPlayer.remove();
-      }
-
-      // Se o canal for inválido, esconde a estática e para a execução
-      if (!channel || !channel.url) { staticOverlay.style.display = 'none'; return; }
-
-      // Adiciona um pequeno atraso para o efeito de estática ser visível
-      setTimeout(() => {
-        // 1. Cria o novo player
-        const newPlayer = createPlayer(channel.url);
-        // 2. Adiciona o novo player ao container
-        playerContainer.appendChild(newPlayer);
-
-        // 3. Tenta iniciar a reprodução APÓS o player estar no DOM
-        if (newPlayer.tagName === 'VIDEO') {
-          const playPromise = newPlayer.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              // Autoplay com som iniciado com sucesso!
-              newPlayer.muted = false;
-              staticOverlay.style.display = 'none';
-              // Adiciona um listener de erro para tentar recarregar o canal
-              newPlayer.addEventListener('error', () => {
-                console.error("Erro no elemento de vídeo. Tentando recarregar o canal...");
-                // Evita loops infinitos de recarregamento
-                if (!newPlayer.dataset.reloading) {
-                  newPlayer.dataset.reloading = 'true';
-                  changeChannel(channel, true); // Tenta recarregar
-                }
-              });
-            }).catch(error => {
-              // Autoplay foi bloqueado pelo navegador.
-              console.error("Autoplay bloqueado:", error);
-              staticOverlay.style.display = 'none';
-            });
-          }
-
-        } else {
-          // Para iframes, apenas escondemos a estática após um tempo.
-          staticOverlay.style.display = 'none';
-        }
-      }, 50); // Reduzi o atraso para uma troca de canal mais ágil
-    }
-
-    // Nova função centralizada para selecionar um canal pelo seu índice na lista
-    function selectChannelByIndex(index) {
-      if (index >= 0 && index < channels.length) {
-        currentChannelIndex = index;
-        const targetChannel = channels[index];
-        changeChannel(targetChannel);
-      }
-    }
-
-    function requestFullscreenFromUserAction() {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-            // A solicitação de tela cheia deve ser iniciada por um gesto do usuário (clique/tecla)
-            elem.requestFullscreen().catch(err => {
-                // Este erro é comum se a solicitação não for de uma ação direta, como no timeout dos números.
-                console.warn(`Aviso de tela cheia: ${err.message}`);
-            });
-        }
-    }
-
-    // Nova função para navegar para o próximo/anterior canal
-    function navigateChannel(direction) {
-      cancelNumericInput(); // Cancela qualquer digitação de canal pendente
-      const totalChannels = channels.length;
-      const nextIndex = (currentChannelIndex + direction + totalChannels) % totalChannels;
-      selectChannelByIndex(nextIndex);
-    }
-
-    // Cria e popula o guia de canais vertical
-    function createVerticalGuide() {
-      const guideContainer = document.getElementById('vertical-guide');
-      channels.forEach((channel, index) => {
-        const item = document.createElement('div');
-        item.className = 'guide-item';
-        item.dataset.index = index; // Armazena o índice para fácil acesso
-        item.innerHTML = `<span class="number">${index + 1}</span> <span class="name">${channel.name}</span>`;
-        item.addEventListener('click', () => { // Permite seleção por clique (para depuração/uso em desktop)
-          selectChannelByIndex(index);
-          hideVerticalGuide();
-        });
-        guideContainer.appendChild(item);
-      });
-    }
-    // Carrega o canal inicial quando a página é aberta
-    document.addEventListener('DOMContentLoaded', () => {
-      const welcomeOverlay = document.getElementById('welcome-overlay');
-
-      welcomeOverlay.addEventListener('click', () => {
-        userHasInteracted = true; // Marca que o usuário interagiu
-        welcomeOverlay.style.display = 'none'; // Esconde a tela de boas-vindas
-
-        // Carrega o canal inicial somente após a primeira interação
-        selectChannelByIndex(currentChannelIndex);
-
-        requestFullscreenFromUserAction(); // Opcional: tenta entrar em tela cheia
-      }, { once: true }); // O evento só vai disparar uma vez
-
-      // Popula o guia vertical ao carregar a página
-      createVerticalGuide();
-    });
-
-    // Lógica para mostrar/esconder a barra de canais
-    let controlsTimeout = null;
-    const channelInputDisplay = document.getElementById('channel-input-display');
-
-    let channelInputBuffer = '';
-    let channelInputTimeout = null;
-
-    // Nova função para centralizar o cancelamento da entrada numérica
-    function cancelNumericInput() {
-      clearTimeout(channelInputTimeout);
-      channelInputBuffer = '';
-      channelInputDisplay.classList.add('hidden');
-    }
-
-    function showVerticalGuide() {
-      const guide = document.getElementById('vertical-guide');
-      isGuideVisible = true;
-      guideSelectedIndex = currentChannelIndex; // Começa no canal atual
-      updateGuideSelection();
-      guide.classList.add('visible');
-    }
-
-    function hideVerticalGuide() {
-      const guide = document.getElementById('vertical-guide');
-      isGuideVisible = false;
-      guide.classList.remove('visible');
-    }
-
-    function updateGuideSelection() {
-      const items = document.querySelectorAll('.guide-item');
-      items.forEach((item, index) => {
-        if (index === guideSelectedIndex) {
-          item.classList.add('active');
-          // Garante que o item ativo esteja visível na tela
-          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          item.classList.remove('active');
-        }
-      });
-    }
-
-    // Constantes para as teclas do controle remoto, evitando repetição
-    const KEYS_UP = ['ArrowUp', 'Up', 'ChannelUp', 'PageUp'];
-    const KEYS_DOWN = ['ArrowDown', 'Down', 'ChannelDown', 'PageDown'];
-    const KEYS_OK = ['Enter', 'OK', 'Select'];
-    const KEYS_BACK = ['Escape', 'Back', 'GoBack'];
-    const KEYS_COLORED = ['ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue'];
-
-    // Adiciona a funcionalidade de mudar de canal com as setas do teclado
-    window.addEventListener('keydown', (event) => {
-      // LINHA DE DIAGNÓSTICO: Mostra no console qual tecla foi pressionada.
-      console.log('Tecla pressionada:', event.key);
-
-      // Se o guia vertical estiver visível, os controles são para ele
-      if (isGuideVisible) {
-        event.preventDefault(); // Previne o comportamento padrão das teclas
-        if (event.key === '0') { // A tecla '0' também fecha o guia
-          hideVerticalGuide();
-        } else if (KEYS_UP.includes(event.key) || event.key === 'ColorF1Green') { // Navegação para cima no guia (seta ou VERDE)
-          guideSelectedIndex = (guideSelectedIndex - 1 + channels.length) % channels.length;
-          updateGuideSelection();
-        } else if (KEYS_DOWN.includes(event.key) || event.key === 'ColorF0Red') { // Navegação para baixo no guia (seta ou VERMELHO)
-          guideSelectedIndex = (guideSelectedIndex + 1) % channels.length;
-          updateGuideSelection();
-        } else if (KEYS_OK.includes(event.key)) { // 'OK' e 'Select' são comuns em controles
-          selectChannelByIndex(guideSelectedIndex);
-          hideVerticalGuide();
-        } else if (KEYS_BACK.includes(event.key)) { // Tecla Voltar do controle fecha o guia
-          hideVerticalGuide();
-        }
-        return; // Ignora o resto do listener
-      } // Fim do bloco if (isGuideVisible)
-
-      const isNumericKey = !event.altKey && !event.ctrlKey && event.key >= '0' && event.key <= '9';
-
-      // Lógica para a tecla '0' quando o guia está fechado
-      if (event.key === '0' && channelInputBuffer.length === 0) {
-        event.preventDefault();
-        showVerticalGuide();
-        return; // Impede que o '0' seja adicionado ao buffer de digitação
-      }
-
-      if (isNumericKey) { // Trata a digitação de qualquer número (incluindo '0' se o buffer não estiver vazio)
-        // Limpa o timeout anterior se o usuário digitar outro número rapidamente
-        clearTimeout(channelInputTimeout);
-
-        channelInputBuffer += event.key;
-        channelInputDisplay.textContent = channelInputBuffer;
-        channelInputDisplay.classList.remove('hidden');
-
-        // Define um timeout para mudar de canal após o usuário parar de digitar
-        channelInputTimeout = setTimeout(() => {
-          const channelNumber = parseInt(channelInputBuffer, 10);
-          const isValidChannel = channelNumber > 0 && channelNumber <= channels.length;
-          
-          if (isValidChannel) {
-            // Usa a nova função centralizada para mudar de canal
-            selectChannelByIndex(channelNumber - 1);
-            cancelNumericInput(); // Limpa e esconde imediatamente
-          } else {
-            // Canal inválido: mostra feedback visual em vermelho
-            channelInputDisplay.classList.add('invalid');
-            // Esconde o display vermelho após um curto período
-            setTimeout(() => {
-              channelInputDisplay.classList.remove('invalid');
-              cancelNumericInput();
-            }, 700); // Mantém o display vermelho por 0.7 segundos
-          }
-        }, 1500); // Espera 1.5 segundos antes de mudar
-      } else if (KEYS_OK.includes(event.key)) {
-        // Permite que o usuário entre em tela cheia manualmente
-        requestFullscreenFromUserAction();
-      } else if (KEYS_UP.includes(event.key)) {
-        event.preventDefault(); // Impede a rolagem da página com as setas
-        navigateChannel(1); // 1 para canal seguinte (para cima)
-      } else if (KEYS_DOWN.includes(event.key)) {
-        event.preventDefault();
-        navigateChannel(-1); // -1 para canal anterior (para baixo)
-      } else if (event.key === ' ' || event.code === 'Space') {
-        event.preventDefault(); // Impede o comportamento padrão do espaço (rolar a página)
-        
-        const player = document.getElementById('player');
-        if (player) {
-          // Tenta focar no iframe. Isso pode ser suficiente para que o player interno
-          // capture eventos de teclado ou inicie a reprodução.
-          player.focus();
-        } else {
-          // Se não houver player, recarrega o canal ativo como fallback.
-          selectChannelByIndex(currentChannelIndex);
-        }
-      } else if (KEYS_BACK.includes(event.key)) {
-        // Se a tecla "Voltar" for pressionada e um número estiver sendo digitado, cancela a digitação.
-        // A lógica para fechar o guia já é tratada no bloco 'if (isGuideVisible)' no início.
-        // Aqui, a tecla "Voltar" serve apenas para cancelar a entrada numérica.
-        if (channelInputBuffer.length > 0) cancelNumericInput();
-      } else if (event.key === 'MediaPlayPause' || event.key === 'Play' || event.key === 'Pause') {
-        event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
-        if (videoPlayer) {
-            if (videoPlayer.paused) {
-                videoPlayer.play();
-            } else {
-                videoPlayer.pause();
-            }
-        }
-      } else if (event.key === 'MediaStop' || event.key === 'Stop') {
-        event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
-        if (videoPlayer) {
-            videoPlayer.pause();
-            videoPlayer.currentTime = 0; // Opcional: volta para o início
-        }
-      } else if (event.key === 'MediaRewind' || event.key === 'Rewind') {
-        event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
-        if (videoPlayer) videoPlayer.currentTime -= 10; // Volta 10 segundos
-      } else if (event.key === 'MediaFastForward' || event.key === 'FastForward') {
-        event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
-        if (videoPlayer) videoPlayer.currentTime += 10; // Avança 10 segundos
-      } else if (KEYS_COLORED.includes(event.key)) {
-        // Reconhece as teclas coloridas do controle remoto
-        event.preventDefault();
-        console.log(`Tecla colorida pressionada: ${event.key}`);
-        // Futuramente, você pode adicionar funções aqui, como filtrar canais por categoria.
-      } else if (event.key === 'Exit') {
-        // Em algumas TVs, a tecla Exit pode fechar o aplicativo.
-        // window.close(); // Descomente se desejar este comportamento.
-      } else {
-        return; // Ignora outras teclas
-      }
-    });
-
-    // Adiciona a funcionalidade de abrir/fechar o guia de canais com o botão direito do mouse
-    window.addEventListener('contextmenu', (event) => {
-      // Impede que o menu de contexto padrão do navegador apareça
-      event.preventDefault(); 
-      // Alterna a visibilidade do guia: se estiver visível, esconde; senão, mostra.
-      if (isGuideVisible) {
-        hideVerticalGuide();
-      } else {
-        showVerticalGuide();
-      }
-    });
-
-    // Garante que a janela principal recupere o foco após um clique no iframe.
-    // Isso é crucial para que os atalhos de teclado (números, setas) continuem funcionando.
-    window.addEventListener('blur', () => {
-      // Um pequeno atraso é necessário para que o navegador processe o elemento que recebeu o foco.
-      setTimeout(() => {
-        if (document.activeElement.tagName === 'IFRAME') {
-          window.focus();
-        }
-      }, 0);
-    });
-  </script>
-</html>
-        event.preventDefault();
-        const videoPlayer = document.querySelector('video#player');
-        if (videoPlayer) videoPlayer.currentTime += 10; // Avança 10 segundos
-      } else if (KEYS_COLORED.includes(event.key)) {
-        // Reconhece as teclas coloridas do controle remoto
-        event.preventDefault();
-        console.log(`Tecla colorida pressionada: ${event.key}`);
-        // Futuramente, você pode adicionar funções aqui, como filtrar canais por categoria.
-      } else if (event.key === 'Exit') {
-        // Em algumas TVs, a tecla Exit pode fechar o aplicativo.
-        // window.close(); // Descomente se desejar este comportamento.
-      } else {
-        return; // Ignora outras teclas
-      }
-    });
-
-    // Adiciona a funcionalidade de abrir/fechar o guia de canais com o botão direito do mouse
-    window.addEventListener('contextmenu', (event) => {
-      // Impede que o menu de contexto padrão do navegador apareça
-      event.preventDefault(); 
-      // Alterna a visibilidade do guia: se estiver visível, esconde; senão, mostra.
-      if (isGuideVisible) {
-        hideVerticalGuide();
-      } else {
-        showVerticalGuide();
-      }
-    });
-
-    // Garante que a janela principal recupere o foco após um clique no iframe.
-    // Isso é crucial para que os atalhos de teclado (números, setas) continuem funcionando.
-    window.addEventListener('blur', () => {
-      // Um pequeno atraso é necessário para que o navegador processe o elemento que recebeu o foco.
-      setTimeout(() => {
-        if (document.activeElement.tagName === 'IFRAME') {
           window.focus();
         }
       }, 0);
