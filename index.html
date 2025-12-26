@@ -216,7 +216,12 @@
     })();
   </script>
 
-  <div id="welcome-overlay">Clique para iniciar e ativar o som</div>
+  <div id="welcome-overlay">
+    <div style="text-align: center;">
+      <div>Clique para iniciar e ativar o som</div>
+      <div style="font-size: 16px; margin-top: 15px; color: #ff6b6b;">⚠️ Permita para liberar os canais</div>
+    </div>
+  </div>
   <div id="vertical-guide"></div>
   <div id="static-overlay"></div>
   <div id="channel-info-display"></div>
@@ -361,9 +366,10 @@
         autoPlayUrl.searchParams.set('autoplay', '1');
         autoPlayUrl.searchParams.set('autostart', 'true');
         player.src = autoPlayUrl.toString();
-        player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-        player.setAttribute('sandbox', 'allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts');
-        player.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-pointer-lock');
+        player.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen; microphone; camera; geolocation; payment; midi; sync-xhr; usb; xr-spatial-tracking');
+        player.setAttribute('sandbox', 'allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-top-navigation');
+        player.setAttribute('allowfullscreen', 'true');
+        player.setAttribute('referrerpolicy', 'no-referrer');
         return player;
       }
 
