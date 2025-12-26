@@ -219,7 +219,7 @@
   <div id="welcome-overlay">
     <div style="text-align: center;">
       <div>Clique para iniciar e ativar o som</div>
-      <div style="font-size: 16px; margin-top: 15px; color: #ff6b6b;">⚠️ Permita "Conteúdos não seguros" nas configurações do site para liberar os canais</div>
+      <div style="font-size: 16px; margin-top: 15px; color: #ff6b6b;">⚠️ Permita "Conteúdo não seguro" nas configurações do site para liberar os canais</div>
     </div>
   </div>
   <div id="vertical-guide"></div>
@@ -544,6 +544,11 @@
 
       welcomeOverlay.addEventListener('click', () => {
         userHasInteracted = true;
+
+        if ('Notification' in window && Notification.permission !== 'granted') {
+          Notification.requestPermission();
+        }
+
         welcomeOverlay.style.display = 'none';
         selectChannelByIndex(currentChannelIndex);
 
@@ -746,5 +751,4 @@
       }, 0);
     });
   </script>
-
 </html>
